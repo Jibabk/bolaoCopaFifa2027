@@ -4,10 +4,10 @@
 
 ## 1. Estado Global do Loop
 
-* **Status da Execução:** `EM_PROGRESSO` — tarefa documental concluída; a implementação de cadastro permanece bloqueada por decisões/aprovação humana.
+* **Status da Execução:** `EM_PROGRESSO` — políticas locais de produto registradas; implementação de cadastro permanece bloqueada por revisão/aprovação técnica e autorização de escopo.
 * **Turno Atual:** não controlado / **Limite Máximo de Turnos:** não definido.
 * **Orçamento de API Utilizado:** não disponível / **Teto Máximo:** não definido.
-* **Data/Hora da Última Atualização:** `2026-10-27 23:49:25 -03`.
+* **Data/Hora da Última Atualização:** `2026-11-02 18:16:29 -03`.
 * **Ambiente / Worktree:** `/home/rosner/projetosgit/bolaoCopaFifa2027`, branch `feat/local-admin-authentication`.
 * **Sinal do Verificador (Stop Hook):** `PENDENTE` (nenhum Stop Hook foi executado; validação documental `git diff --check` passou).
 
@@ -23,7 +23,7 @@
 
 - [x] `git diff --check` sem erros para a alteração documental deste turno.
 - [ ] Testes de aplicação, lint/type-check e build: não são critérios desta tarefa documental; continuam não executados conforme o último registro conhecido.
-- [ ] Para iniciar fluxos de cadastro/admissão: decisões pendentes resolvidas e aprovação humana explícita do escopo, seguida de implementação e validações próprias. Não concluído.
+- [ ] Para iniciar fluxos de cadastro/admissão: revisão/aprovação humana de especificação, design, rastreabilidade e autorização explícita de implementação, seguida de validações próprias. Não concluído.
 
 ---
 
@@ -68,9 +68,9 @@
 
 ### Change `2026-10-19-identity-email-link`
 
-- OpenSpec reportou artefatos de planejamento completos, mas apply reportou **0/6 tarefas concluídas**; todas permanecem desmarcadas em `openspec/changes/2026-10-19-identity-email-link/tasks.md`.
-- A proposta identifica a change como documental e não aprovada para implementação. Completude dos artefatos ou avaliação por `review-loop` não equivale a aprovação humana.
-- Decisões/revisões humanas pendentes antes dos fluxos dependentes: ciclo de vida de conta/solicitação (login pré-aprovação, rejeição, reativação, bloqueio e sequência confirmação/aprovação); política própria para confirmação de cadastro local (mecanismo, validade, consumo e limites, sem inferir HU-22); provisionamento administrativo fora do ambiente local e eventual troca obrigatória de senha; prova segura do primeiro vínculo Google/local e questões residuais TEC-01 (Google fora da primeira entrega proposta); autorização/auditoria de aprovação e rejeição, política de dados/migração e integração operacional de e-mail OPS-03; revisão humana de especificação/design/rastreabilidade com aprovador, data e escopo.
+- Histórico da execução OpenSpec: apply reportou **0/6 tarefas concluídas** antes deste turno. Em 02/11/2026, somente a tarefa documental de confirmação das políticas de produto foi marcada concluída em `tasks.md`; tarefas de design técnico e implementação continuam pendentes.
+- A proposta identifica a change como documental e não aprovada para implementação. As recomendações locais foram confirmadas pelo solicitante em 02/11/2026, mas essa confirmação não aprova a implementação nem substitui a revisão humana exigida para a Task 2.2.
+- Em 02/11/2026, o solicitante confirmou as recomendações de políticas de produto para o escopo documental de cadastro/admissão local; decisões registradas em `docs/requirements/decisoes-pendentes.md` e refletidas na change OpenSpec. Isso não autoriza implementação. Permanecem abertos: desenho técnico de código/sessão/CSRF/concorrência/migrações; provedor e operação externa de e-mail OPS-03; retenção/exclusão OPS-01; Google e primeiro vínculo; provisionamento administrativo fora do ambiente local; revisão humana de especificação/design/rastreabilidade (Task 2.2).
 
 ---
 
@@ -81,7 +81,7 @@
 - [x] **Task 1.2:** Adaptar este `docs/STATE.md` ao `docs/STATE-template.md`, preservando as informações existentes e registrando a validação documental.
 
 ### Fase 2: Decisões e aprovação de produto (não autorizadas por artefatos)
-- [/] **Task 2.1:** Obter da pessoa responsável as decisões pendentes e aprovação humana explícita da change e do escopo antes de implementar tarefas dependentes.
+- [x] **Task 2.1:** Obter da pessoa responsável confirmação das políticas de produto locais de cadastro/admissão e registrar o escopo documental da change. Decisões confirmadas em 02/11/2026; não equivalem a aprovação de implementação. Design técnico, revisão de rastreabilidade e autorização de código permanecem pendentes.
 - [ ] **Task 2.2:** Revisar a especificação, o design e a rastreabilidade requisito → cenário → tarefa → teste, documentando aprovador, data e escopo conforme a governança.
 
 ### Fase 3: Validação e implementação condicionais
@@ -100,15 +100,16 @@ Nenhuma tentativa de implementação descartada foi identificada nos registros d
 | Histórico anterior | Tentativa de adicionar o symlink `.claude/skills/review-loop` | A tentativa de adicionar o caminho falhou. | Causa não detalhada no estado anterior. | Não foi feito workaround; o symlink aponta para `.agents/skills/review-loop/` e não deve ser commitado automaticamente. |
 | Histórico anterior | Conferir estado da árvore Git após mudança de branch/commits | Branch `feat/local-admin-authentication`, `HEAD`/upstream em `160c635`; somente `CLAUDE.md` modificado, remoção de `docs/implementation-status-2026-10-27.md` e `docs/STATE.md` não rastreado. `git diff --check` sem erros. | Não aplicável; fotografia da árvore naquele momento. | Preservar como observação histórica, não como estado continuamente atualizado. |
 | Turno atual | Adaptar `docs/STATE.md` ao template, preservando histórico e ressalvas | `git diff --check` terminou com código de saída 0, sem saída/erros. | Não aplicável; edição documental. | Concluído e validado; nenhuma validação de aplicação foi executada. |
+| 02/11/2026 | Registrar decisões de produto para cadastro/admissão local e alinhar os artefatos da change OpenSpec | Validação final: `openspec validate 2026-10-19-identity-email-link --strict` e `git diff --check` retornaram código 0. Review-loop: primeira revisão 7/10; após correções, segunda revisão 9/10; correções finais aplicadas ao README e à especificação do fluxo de alteração de e-mail. | A primeira revisão encontrou tarefas antigas e escopo/registro inconsistentes; a segunda encontrou descrição desatualizada do README e falta de rastreabilidade explícita do código HU-22 na troca de e-mail. | Atualizados registro/título e README, proposta/design/spec/tasks; sem implementação ou testes de aplicação. Validações finais executadas após últimas edições neste turno. |
 | Turno anterior | Criar commits convencionais separados por grupo lógico | Commits `aacd9be` e `ad6c008` criados para protocolo (`CLAUDE.md`) e estado (`docs/STATE.md` + remoção do relatório antigo). O template foi deixado não rastreado inicialmente por whitespace final; removido esse whitespace agora. | A validação inicial do staging amplo falhou por whitespace final preexistente no template e espaço acidental no estado. | Espaço acidental removido do estado e o arquivo foi commitado após validação. Template agora é o grupo lógico pendente de commit; não houve testes de aplicação. |
 
 ---
 
 ## 7. Próximo Passo Imediato
 
-* **Tarefa Atual:** `Task 2.1 — Obter decisões pendentes e aprovação humana explícita antes de implementar a change de cadastro/admissão.`
-* **Ação Exata no Próximo Turno:** `Consultar a pessoa responsável para resolver as políticas pendentes e confirmar aprovação/escopo. Não implementar fluxos dependentes até haver decisão e aprovação registradas.`
-* **Condição de Sucesso do Turno:** `Decisões e aprovação humana documentadas com escopo identificável; na ausência delas, manter implementação bloqueada e registrar a pendência, sem marcar tarefas OpenSpec concluídas.`
+* **Tarefa Atual:** `Task 2.2 — Revisar especificação, design e rastreabilidade requisito → cenário → tarefa → teste, registrando aprovador, data e escopo; manter implementação bloqueada até aprovação específica.`
+* **Ação Exata no Próximo Turno:** `Conferir a change 2026-10-19-identity-email-link contra requisitos v3.4 e decisões registradas; resolver lacunas de design técnico e registrar revisão/aprovação humana sem implementar código.`
+* **Condição de Sucesso do Turno:** `Revisão documental rastreável e validação OpenSpec/git diff --check com código 0; nenhuma tarefa de implementação marcada concluída sem execução/validação.`
 
 ---
 

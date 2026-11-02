@@ -6,8 +6,8 @@ A primeira entrega funcional prioriza o cadastro local, a confirmação do ender
 
 ## O que muda
 
-- Especificar solicitação de cadastro local com nome, e-mail e credencial local, confirmação do e-mail e autenticação por usuário/senha após a confirmação.
-- Especificar a conta administrativa inicial provisionada por setup controlado. No desenvolvimento local, permitir autenticação sem validação de e-mail usando somente a senha definida em variável de ambiente local não versionada; essa exceção é exclusiva do ambiente local e não define credencial padrão para produção.
+- Especificar solicitação de cadastro local com nome, e-mail e credencial local, confirmação do e-mail, autenticação por usuário/senha após a confirmação e alteração de e-mail local com ativação apenas após verificar o endereço novo.
+- Reutilizar no desenvolvimento local a exceção administrativa já decidida em PROD-08 (`admin`, senha configurada em variável local não versionada, sem validação de e-mail, exclusivamente em `ENVIRONMENT=development`). Provisionamento e recuperação de acesso administrativo fora do ambiente local permanecem fora/pendentes; esta change não define uma credencial ou setup de produção.
 - Especificar a aprovação/rejeição administrativa da participação, com autorização e auditoria, mantendo usuários não aprovados impedidos de participar.
 - Manter recuperação de senha HU-21 fora desta entrega e a autenticação Google como opcional/futura, sem misturar seus fluxos com confirmação de e-mail local.
 
@@ -21,4 +21,4 @@ Vínculo/autenticação Google (HU-22/23 e change dedicada futura), recuperaçã
 
 ## Governança
 
-**Status: proposta documental, não aprovada para implementação.** A priorização local e o provisionamento inicial aqui registrados não aprovam automaticamente desenho técnico nem tarefas. Registrar a decisão e a aprovação humana da change, seu escopo e versões de artefatos antes de executar tarefas dependentes.
+**Status: change documental atualizada com as decisões locais confirmadas pelo solicitante em 02/11/2026; NÃO aprovada para implementação.** O escopo da primeira entrega permanece cadastro/admissão e alteração de e-mail local; Google e HU-21 ficam fora. A confirmação das políticas de produto não constitui aprovação de desenho técnico nem autorização para executar tarefas de implementação. A revisão humana de especificação, design, rastreabilidade e validações permanece necessária antes de qualquer implementação. Aprovador organizacional formal não identificado.

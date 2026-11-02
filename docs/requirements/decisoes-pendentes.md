@@ -1,8 +1,8 @@
-# Registro de decisões pendentes — Bolão Copa FIFA 2027
+# Registro de decisões e pendências — Bolão Copa FIFA 2027
 
-**Versão:** 1.5
-**Data:** 19/10/2026
-**Status:** Registro atualizado com decisões de 19/10/2026 sobre verificação inicial e após mudança de e-mail local, três tentativas por verificação e login de identidade Google já vinculada; lacunas residuais permanecem abertas.
+**Versão:** 1.6
+**Data:** 02/11/2026
+**Status:** Atualizado em 02/11/2026 com políticas de produto confirmadas para cadastro/admissão local (PROD-07) e alinhamento com a decisão local administrativa PROD-08. Permanecem pendentes desenho técnico, operação de e-mail, vínculo Google e demais lacunas explicitadas nos itens correspondentes.
 **Fonte de requisitos:** [`requisitos-bolao-copa-mundo-feminina-2027.md`](requisitos-bolao-copa-mundo-feminina-2027.md), versão 3.4, 19/10/2026.
 
 ## 1. Objetivo e uso
@@ -84,11 +84,12 @@ Itens decididos registram a decisão informada, a data e as lacunas residuais. I
 
 - **Decisão registrada:** cadastro aberto para solicitação, sujeito à aprovação de administrador. Após aprovação, o usuário cadastrado recebe e-mail de confirmação de cadastro e de liberação para uso do sistema. Dados mínimos informados: nome e e-mail.
 - **Complemento decidido em 19/10/2026:** o e-mail da conta local, inclusive quando alterado, requer verificação do novo endereço por código numérico de seis dígitos enviado a ele, com até três tentativas por verificação (HU-22). Conta validada com identidade Google já vinculada pode autenticar-se por Google (HU-23); isso não substitui aprovação administrativa nem o e-mail de liberação.
-- **Lacuna residual:** se “cadastro aberto” cria conta pendente ou apenas solicitação; autenticação antes da aprovação; fluxos de rejeição, reativação, saída e tratamento do histórico; sequência entre verificação local e aprovação administrativa; conteúdo e segurança do e-mail de aprovação. Validade, reenvio e reinício de tentativas permanecem em TEC-01; o limite de três tentativas por verificação está decidido.
-- **Nota de privacidade:** nome/e-mail são os únicos campos mínimos definidos aqui; não inferir outros campos obrigatórios.
-- **Aprovação registrada:** gate e dados mínimos informados pelo usuário em 18/10/2026; verificação local informada pelo solicitante em 19/10/2026; aprovador organizacional não identificado.
-- **Bloqueia:** detalhes de fluxo de admissão e ciclo de conta; o gate de aprovação é definido.
-- **Status:** Gate de aprovação e dados mínimos decididos; fluxo residual aberto.
+- **Decisões registradas em 02/11/2026:** o cadastro cria conta/solicitação pendente; o e-mail local deve ser verificado antes de entrar na fila administrativa; conta verificada e pendente pode autenticar-se apenas para consultar o próprio estado e corrigir o próprio nome, sem acesso a palpites, ranking, dados de terceiros ou funções administrativas. Aprovação/rejeição são ações administrativas explícitas e auditadas (ator, instante, ação e transição); aprovação libera participação e dispara o e-mail de liberação, cuja falha deve ser registrada e permitir nova tentativa sem reverter a decisão. Rejeição não apaga conta/histórico automaticamente. Reativação e saída são transições auditadas, sem exclusão automática; retenção e exclusão permanecem em OPS-01. A mudança de e-mail só se efetiva após verificar o endereço novo; até lá, o antigo permanece vigente. Endereço já associado a outra conta não gera fusão automática e exige resolução explícita.
+- **Política recomendada e aceita para o código de confirmação de cadastro:** código de uso único, validade de 10 minutos, reenvio sem reiniciar as três tentativas daquela verificação, e limitação de solicitações. O código não deve ser exposto em logs nem armazenado em claro; detalhes criptográficos e antiabuso devem ser definidos no design técnico. Esta política de cadastro local não altera a HU-22, cuja finalidade é verificação para vínculo Google/local, nem a HU-21 de recuperação de senha.
+- **Nota de privacidade:** nome/e-mail são os únicos campos mínimos de perfil; credencial local é dado de autenticação. Não inferir outros campos obrigatórios.
+- **Aprovação registrada:** gate e dados mínimos informados em 18/10/2026; verificação local informada em 19/10/2026; pacote de decisões locais acima confirmado explicitamente pelo solicitante em 02/11/2026. Aprovador organizacional formal não identificado; não presumir aprovação organizacional.
+- **Bloqueia:** as políticas de produto locais acima foram resolvidas para revisão documental da change; implementação segue condicionada à revisão/aprovação de especificação, design, rastreabilidade e detalhes técnicos pela governança OpenSpec. E-mail externo operacional continua dependente de OPS-03.
+- **Status:** gate, dados mínimos e políticas de produto locais registrados; questões de retenção, operação de e-mail e desenho técnico permanecem abertas.
 
 ### PROD-08 — Papéis e privilégios administrativos
 
