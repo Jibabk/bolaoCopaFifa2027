@@ -1,10 +1,10 @@
 ## ADDED Requirements
 
 ### Requirement: Cadastro de conta local
-O sistema MUST permitir que uma pessoa solicite cadastro local informando nome, e-mail e credencial de usuário/senha, e MUST exigir confirmação do endereço antes de permitir login local (PROD-07; HU-12/13).
+O sistema MUST permitir que uma pessoa solicite cadastro local informando nome, e-mail e credencial de usuário/senha. O endereço deve ser confirmado antes do login; após a confirmação, uma conta ainda pendente de aprovação pode autenticar-se apenas para consultar o próprio estado e corrigir o próprio nome (PROD-07). Nome e e-mail são dados mínimos de perfil; a credencial é dado de autenticação, não um campo mínimo de perfil.
 
 #### Scenario: Solicitação de cadastro
-- **GIVEN** uma pessoa informa os dados mínimos de cadastro e uma credencial local válida
+- **GIVEN** uma pessoa informa os dados mínimos de perfil (nome e e-mail) e uma credencial local válida para autenticação
 - **WHEN** envia a solicitação de cadastro
 - **THEN** o sistema MUST registrar a solicitação e iniciar a confirmação do endereço de e-mail sem conceder participação no bolão
 
@@ -72,9 +72,19 @@ O sistema MUST exigir aprovação de uma conta administrativa para liberar a par
 - **THEN** o sistema MUST liberar as funções de participante, registrar ator, instante, ação e estados anterior/novo para auditoria e disparar o e-mail de liberação
 
 #### Scenario: Rejeição por administrador
-- **GIVEN** uma solicitação de participação pendente
+- **GIVEN** uma solicitação com e-mail confirmado e aguardando aprovação
 - **WHEN** a conta administrativa autorizada rejeita a solicitação
-- **THEN** o sistema MUST manter bloqueadas as funções de participante e registrar a ação administrativa para auditoria
+- **THEN** o sistema MUST manter bloqueadas as funções de participante e registrar ator, instante, ação e estados anterior/novo para auditoria
+
+#### Scenario: Ação administrativa sem autorização
+- **GIVEN** uma sessão sem autorização administrativa e uma solicitação aguardando aprovação
+- **WHEN** a sessão tenta aprovar ou rejeitar a solicitação
+- **THEN** o sistema MUST negar a ação sem alterar o estado nem criar auditoria de transição
+
+#### Scenario: Alterações concorrentes de participação
+- **GIVEN** uma solicitação com e-mail confirmado e aguardando aprovação
+- **WHEN** ações administrativas conflitantes são submetidas concorrentemente
+- **THEN** o sistema MUST preservar uma única transição válida e auditoria consistente, sem liberar participação por uma ação rejeitada ou obsoleta
 
 ### Requirement: Conta administrativa inicial
 A autenticação administrativa local de desenvolvimento segue a decisão PROD-08 registrada: identidade `admin`, senha definida em variável de ambiente local não versionada e sem verificação de e-mail, exclusivamente com `ENVIRONMENT=development`. Esta exceção não estabelece provisionamento administrativo fora do ambiente local, que permanece pendente de decisão e design. Credenciais MUST NOT ser embutidas em imagens, logs ou configurações de produção.
@@ -90,12 +100,12 @@ A autenticação administrativa local de desenvolvimento segue a decisão PROD-0
 - **THEN** o sistema MUST rejeitar esse mecanismo
 
 #### Scenario: Aprovação de participantes pela conta administrativa
-- **GIVEN** uma solicitação de participação pendente
+- **GIVEN** uma solicitação de participação confirmada por e-mail e aguardando aprovação
 - **WHEN** a conta administrativa inicial autenticada e autorizada a revisa
 - **THEN** o sistema MUST permitir aprovar ou rejeitar a solicitação e MUST auditar a decisão
 
 ### Requirement: Alteração de e-mail local
-Uma pessoa autenticada MUST iniciar a alteração do e-mail local submetendo o novo endereço para verificação. A verificação MUST usar o código numérico de seis dígitos enviado ao novo endereço e permitir no máximo três tentativas por verificação, conforme HU-22. A validade e o reenvio deste código seguem pendentes no escopo futuro TEC-01; não presumir para este fluxo a política de 10 minutos/reenvio definida para confirmação de cadastro local.
+Uma pessoa autenticada MUST submeter o novo endereço local para verificação. Conforme PROD-07, o novo endereço só se torna vigente após verificação; até então, o anterior permanece vigente. Usar código enviado ao novo endereço, numérico de seis dígitos e limitado a três tentativas por verificação (PROD-07/HU-22). Validade e reenvio seguem pendentes; não aplicar a política de confirmação cadastral.
 
 #### Scenario: Endereço antigo permanece vigente
 - **GIVEN** uma conta local com endereço vigente confirmado
@@ -112,25 +122,16 @@ Uma pessoa autenticada MUST iniciar a alteração do e-mail local submetendo o n
 - **WHEN** a pessoa solicita a alteração
 - **THEN** o sistema MUST rejeitar a alteração e MUST NOT fundir contas nem transferir identidades automaticamente; resolução explícita é necessária
 
-#### Scenario: Alteração aguardando verificação
-- **GIVEN** uma conta local com endereço vigente confirmado
-- **WHEN** a pessoa solicita alteração para um endereço novo
-- **THEN** o sistema MUST manter o endereço antigo vigente até a confirmação do novo
+#### Scenario: Duas alterações reivindicam o mesmo endereço
+- **GIVEN** duas contas locais solicitam alteração para o mesmo endereço ainda não confirmado
+- **WHEN** ambas as solicitações tentam confirmar esse endereço
+- **THEN** o sistema MUST permitir que no máximo uma conta o ative e MUST manter a outra conta com seu endereço vigente anterior, sem fusão de contas
 
-#### Scenario: Conflito com endereço existente
-- **GIVEN** o novo endereço já está associado a outra conta
-- **WHEN** a pessoa solicita a alteração
-- **THEN** o sistema MUST rejeitar a alteração e MUST NOT fundir contas nem transferir identidades automaticamente
 
-### Requirement: Integração Google opcional e separada
-A autenticação e o vínculo com Google são opcionais para a primeira entrega de cadastro local e MUST NOT ser pré-requisito para solicitar cadastro, confirmar e-mail, autenticar com usuário/senha ou obter aprovação administrativa. Os comportamentos HU-22/23 permanecem aplicáveis caso a integração Google seja implementada futuramente.
+### Requirement: Cadastro local independente de Google
+O cadastro, a confirmação do endereço local, a autenticação por credencial local e a admissão MUST funcionar sem integração Google. Integração Google, primeiro vínculo e autenticação Google são escopo futuro e não são definidos por esta change.
 
 #### Scenario: Fluxo local sem Google
 - **GIVEN** a integração Google não está habilitada
 - **WHEN** uma pessoa solicita cadastro, confirma seu e-mail ou autentica-se localmente
 - **THEN** o sistema MUST permitir o fluxo local sem exigir identidade Google
-
-#### Scenario: Primeiro vínculo Google por coincidência de e-mail
-- **GIVEN** uma identidade Google não vinculada e uma conta local preexistente com o mesmo e-mail
-- **WHEN** houver correspondência de endereço
-- **THEN** o sistema MUST NOT conceder acesso à conta preexistente somente com base na coincidência de e-mail; qualquer primeiro vínculo futuro deve respeitar HU-22/23 e decisão TEC-01 aprovada

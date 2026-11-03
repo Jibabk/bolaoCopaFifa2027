@@ -2,7 +2,7 @@
 
 ## Por quê
 
-A primeira entrega funcional prioriza o cadastro local, a confirmação do endereço de e-mail e o login por usuário e senha. A participação no bolão continua condicionada à aprovação administrativa (PROD-07). A integração Google fica opcional e fora desta primeira entrega; HU-22/23 e as decisões de vínculo permanecem como escopo futuro independente.
+A primeira entrega funcional prioriza cadastro local, confirmação do endereço, login por credencial local, admissão administrativa e alteração do endereço de e-mail local. A participação continua condicionada à aprovação administrativa (PROD-07). A integração Google, o primeiro vínculo Google/local e a recuperação de senha HU-21 ficam fora desta entrega. A alteração do e-mail local deve observar a verificação prevista pela HU-22 (código de seis dígitos e até três tentativas), sem importar para esse fluxo a validade ou a política de reenvio do código de cadastro, ainda não definida para a alteração.
 
 ## O que muda
 
@@ -17,8 +17,8 @@ A primeira entrega funcional prioriza o cadastro local, a confirmação do ender
 
 ## Fora de escopo
 
-Vínculo/autenticação Google (HU-22/23 e change dedicada futura), recuperação de senha HU-21, seleção de fornecedor de e-mail, implementação, edição da change de scaffold `2026-10-18-technical-foundation`, Docker e implantação em nuvem. Políticas técnicas ainda abertas não são fixadas por esta proposta.
+Integração e autenticação Google, primeiro vínculo Google/local (incluindo os fluxos de HU-22/23 correspondentes), recuperação de senha HU-21, seleção/operação de fornecedor de e-mail, implementação, edição da change de scaffold `2026-10-18-technical-foundation`, Docker e implantação em nuvem. A verificação de endereço local alterado, incluída nesta entrega e referenciada pela HU-22, não habilita vínculo Google. Políticas técnicas ainda abertas não são fixadas por esta proposta.
 
 ## Governança
 
-**Status: change documental atualizada com as decisões locais confirmadas pelo solicitante em 02/11/2026; NÃO aprovada para implementação.** O escopo da primeira entrega permanece cadastro/admissão e alteração de e-mail local; Google e HU-21 ficam fora. A confirmação das políticas de produto não constitui aprovação de desenho técnico nem autorização para executar tarefas de implementação. A revisão humana de especificação, design, rastreabilidade e validações permanece necessária antes de qualquer implementação. Aprovador organizacional formal não identificado.
+**Status: proposta documental em revisão; NÃO aprovada para implementação.** As políticas locais de produto foram confirmadas pelo solicitante em 02/11/2026. Esta confirmação e a validação estrutural OpenSpec não constituem aprovação técnica nem autorização para executar tarefas de implementação. Antes do código, é necessária revisão humana do escopo, design, rastreabilidade e pendências técnicas; aprovador organizacional formal não identificado.
