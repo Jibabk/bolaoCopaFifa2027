@@ -4,10 +4,10 @@
 
 ## 1. Estado Global do Loop
 
-* **Status da Execução:** `EM_PROGRESSO` — políticas locais de produto registradas; implementação de cadastro permanece bloqueada por revisão/aprovação técnica e autorização de escopo.
+* **Status da Execução:** `EM_PROGRESSO` — recorte e desenho técnico mínimo da primeira fatia (cadastro/confirmação local) aprovados, com autorização explícita de implementação registrada em 02/11/2026; código não iniciado por solicitação expressa do usuário neste turno.
 * **Turno Atual:** não controlado / **Limite Máximo de Turnos:** não definido.
 * **Orçamento de API Utilizado:** não disponível / **Teto Máximo:** não definido.
-* **Data/Hora da Última Atualização:** `2026-11-02 23:18:00 -03`.
+* **Data/Hora da Última Atualização:** `2026-11-02 23:48:00 -03`.
 * **Ambiente / Worktree:** `/home/rosner/projetosgit/bolaoCopaFifa2027`, branch `feat/local-admin-authentication`.
 * **Sinal do Verificador (Stop Hook):** `PENDENTE` (nenhum Stop Hook foi executado; validação documental `git diff --check` passou).
 
@@ -23,7 +23,7 @@
 
 - [x] `openspec validate 2026-10-19-identity-email-link --strict` válido e `git diff --check` sem erros para a alteração documental deste turno; primeira fatia de implementação permanece sujeita à revisão humana e autorização explícita.
 - [ ] Testes de aplicação, lint/type-check e build: não são critérios desta tarefa documental; continuam não executados conforme o último registro conhecido.
-- [ ] Para iniciar fluxos de cadastro/admissão: revisão/aprovação humana de especificação, design, rastreabilidade e autorização explícita de implementação, seguida de validações próprias. Não concluído.
+- [x] Para primeira fatia de cadastro/confirmação: aprovação humana do recorte/desenho técnico mínimo e autorização explícita registradas pelo solicitante em 02/11/2026. Implementação ainda não iniciada, conforme pedido atual; validar antes de declarar conclusão.
 
 ---
 
@@ -68,9 +68,9 @@
 
 ### Change `2026-10-19-identity-email-link`
 
-- Histórico da execução OpenSpec: apply reportou **0/6 tarefas concluídas** antes deste turno. Em 02/11/2026, somente a tarefa documental de confirmação das políticas de produto foi marcada concluída em `tasks.md`; tarefas de design técnico e implementação continuam pendentes.
-- A proposta identifica a change como documental e não aprovada para implementação. As recomendações locais foram confirmadas pelo solicitante em 02/11/2026, mas essa confirmação não aprova a implementação nem substitui a revisão humana exigida para a Task 2.2.
-- Em 02/11/2026, o solicitante confirmou as recomendações de políticas de produto para o escopo documental de cadastro/admissão local; decisões registradas em `docs/requirements/decisoes-pendentes.md` e refletidas na change OpenSpec. Isso não autoriza implementação. Permanecem abertos: desenho técnico de código/sessão/CSRF/concorrência/migrações; provedor e operação externa de e-mail OPS-03; retenção/exclusão OPS-01; Google e primeiro vínculo; provisionamento administrativo fora do ambiente local; revisão humana de especificação/design/rastreabilidade (Task 2.2).
+- Histórico da execução OpenSpec: apply reportou **0/6 tarefas concluídas** antes deste turno. Em 02/11/2026, as políticas de produto locais foram confirmadas; neste turno, o solicitante também aprovou o recorte/desenho técnico mínimo e autorizou explicitamente a implementação da primeira fatia de cadastro/confirmação local.
+- A aprovação e autorização humanas para a primeira fatia estão registradas nos artifacts e em 02/11/2026; nenhuma implementação foi iniciada, conforme solicitação explícita do usuário neste turno. Isso não aprova fatias posteriores.
+- Permanecem pendentes para etapas futuras: decisões de sessão/CSRF/revogação e política de senha para login autenticado; validade/reenvio HU-22 e comparação/reserva do e-mail para alteração; operação externa de e-mail de liberação OPS-03; retenção/exclusão OPS-01; Google/primeiro vínculo; provisionamento administrativo fora do ambiente local.
 
 ---
 
@@ -82,11 +82,11 @@
 
 ### Fase 2: Decisões e aprovação de produto (não autorizadas por artefatos)
 - [x] **Task 2.1:** Obter da pessoa responsável confirmação das políticas de produto locais de cadastro/admissão e registrar o escopo documental da change. Decisões confirmadas em 02/11/2026; não equivalem a aprovação de implementação. Design técnico, revisão de rastreabilidade e autorização de código permanecem pendentes.
-- [ ] **Task 2.2:** Revisar a especificação, o design e a rastreabilidade requisito → cenário → tarefa → teste, documentando aprovador, data e escopo conforme a governança. Revisões críticas automatizadas identificaram ajustes já aplicados em HU-22/PROD-07 e rastreabilidade; a última revisão de prontidão considerou necessário operacionalizar gates da primeira fatia, agora explicitados em design/tasks. Revisão humana formal e autorização de implementação continuam pendentes.
+- [x] **Task 2.2:** Revisar especificação, design e rastreabilidade requisito → cenário → tarefa → evidência; o solicitante aprovou em 02/11/2026 o escopo e o desenho técnico mínimo da primeira fatia e autorizou explicitamente sua implementação. A validação estrutural OpenSpec não substitui esta aprovação; nenhum código foi iniciado neste turno, por solicitação.
 
 ### Fase 3: Validação e implementação condicionais
 - [ ] **Task 3.1:** Quando dependências estiverem disponíveis e sua instalação for autorizada, executar pytest e validações de frontend; registrar resultados reais.
-- [ ] **Task 3.2:** Só após decisões e aprovação, aplicar tarefas OpenSpec autorizadas, com cobertura/validação proporcional; não fazer push sem autorização explícita.
+- [ ] **Task 3.2:** A implementação da primeira fatia está autorizada, mas não iniciada neste turno conforme pedido do usuário. Começar somente mediante solicitação posterior; então aplicar tarefas autorizadas com cobertura/validação proporcional. Não fazer push sem autorização explícita.
 
 ---
 
@@ -107,13 +107,14 @@ Nenhuma tentativa de implementação descartada foi identificada nos registros d
 | 02/11/2026 | Reduzir escopo da preparação documental conforme preferência do solicitante | Solicitante pediu caminho mais simples e rápido, projeto inicial e nenhuma alteração de código. Apenas `docs/STATE.md` atualizado; proposta simplificada planejada, sem editar os artifacts OpenSpec. `git diff --check` passou. | Rigor proporcional ao início do projeto: documentação deve fechar decisões mínimas e deixar incertezas periféricas em aberto, sem sobrearquitetura. | Próximo passo: apresentar revisão mínima proposta dos artifacts existentes e aguardar confirmação antes de escrevê-los, conforme skill OpenSpec; implementação permanece fora de escopo. |
 | 02/11/2026 | Revisão independente e correções documentais finais da change de identidade | Revisão automatizada marcou 7/10: apontou que HU-22 não fixa quando o e-mail alterado passa a valer para contato/login e recomendou corrigir a atribuição PROD-07/08 na matriz. A decisão local PROD-07 confirmada em 02/11 já fixa ativação após verificação; spec agora atribui isso a PROD-07, mantendo HU-22 apenas como referência de verificação. Clarificado que nome/e-mail são dados mínimos de perfil e credencial é dado de autenticação. Separada a rastreabilidade de admissão (PROD-07) da autenticação administrativa (PROD-08); tarefa 1.3 delimitada por fluxo afetado. Primeira validação estrita alertou requisito longo; simplificado. Validação final `openspec validate 2026-10-19-identity-email-link --strict` e `git diff --check` passaram. | Decisão local PROD-07 registrada e confirmada resolve a regra local de ativação; não se trata de inferência da HU-22. Revisão automatizada não é aprovação humana. | Task 2.2 permanece pendente de revisão/aprovação humana; nenhum código ou teste de runtime executado. Próximo passo: revisão humana documentada e autorização específica antes de implementar. |
 | 02/11/2026 | Delimitar documentação para prontidão da primeira fatia | Revisão independente classificou os artifacts em 8/10: semanticamente compatíveis com PROD-07/08, mas faltava separar gates técnicos essenciais da fatia de cadastro/verificação dos fluxos posteriores. `design.md` e `tasks.md` agora delimitam primeira fatia, gates mínimos, decisões posteriores por fluxo, gates humanos separados e rastreabilidade de cenário/tarefa/evidência. `openspec validate 2026-10-19-identity-email-link --strict` e `git diff --check` passaram. Segunda crítica independente dos ajustes está em andamento. | Planejamento completo OpenSpec e autorização genérica para “deixar pronto” não constituem aprovação humana formal nem autorização explícita para iniciar código conforme governança registrada. | Nenhum código ou teste de runtime executado. Segunda crítica (8/10) apontou necessidade de esclarecer que 2.1 inclui migração/modelagem na implementação autorizada, que os endpoints da primeira fatia não são autenticados e que a sessão fica para a fatia posterior; ajustes aplicados, incluindo condicionar testes de conflito de e-mail à política aprovada. Validações OpenSpec estrita e `git diff --check` passaram após os ajustes. Task 2.2 permanece pendente de aprovação humana e autorização explícita; próximo passo é submeter pacote revisado à pessoa responsável. |
+| 02/11/2026 | Registrar aprovação do desenho técnico mínimo e autorização de implementação da primeira fatia | O solicitante aprovou explicitamente o desenho técnico mínimo e autorizou a implementação da primeira fatia de cadastro/confirmação local; solicitou não iniciar código neste turno. Atualizados proposal, design, tasks e estado para registrar escopo e gates distintos; tarefas documentais 1.2/1.3/2.2 marcadas concluídas; implementação segue pendente e não iniciada. `openspec validate 2026-10-19-identity-email-link --strict` e `git diff --check` retornaram código 0. | A instrução de não começar código é específica deste turno; autorização é registrada para implementação futura da primeira fatia, não para escopos posteriores. | Não houve implementação nem testes de runtime; executar validações documentais e atualizar este registro com seus resultados. Próximo passo: aguardar solicitação para iniciar código; nenhuma tarefa de implementação marcada concluída. |
 
 ---
 
 ## 7. Próximo Passo Imediato
 
-* **Tarefa Atual:** `Task 2.2 — Revisar especificação, design e rastreabilidade requisito → cenário → tarefa → teste, registrando aprovador, data e escopo; manter implementação bloqueada até aprovação específica.`
-* **Ação Exata no Próximo Turno:** `Submeter à revisão humana o pacote OpenSpec revisado e o recorte da primeira fatia (cadastro/confirmação sem login autenticado); registrar aprovador, data, escopo e autorização explícita. Não iniciar código antes desses gates humanos e da aprovação do desenho técnico mínimo.`
+* **Tarefa Atual:** `Aprovação da primeira fatia registrada; aguardar solicitação do usuário para iniciar a implementação autorizada de cadastro/confirmação local.`
+* **Ação Exata no Próximo Turno:** `Se o usuário solicitar, iniciar a primeira fatia autorizada de cadastro/confirmação local, respeitando o desenho mínimo aprovado e sem incluir login autenticado, admissão, alteração de e-mail, Google ou recuperação de senha.`
 * **Condição de Sucesso do Turno:** `Matriz e revisão documental coerentes com requisitos/decisões, validação OpenSpec e git diff --check com código 0, e resultado da revisão humana registrado se ocorrer; caso contrário, manter Task 2.2 pendente e aprovação/implementação bloqueadas. Nenhuma tarefa de implementação marcada concluída sem execução/validação.`
 
 ---

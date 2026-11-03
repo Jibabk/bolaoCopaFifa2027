@@ -5,8 +5,8 @@ Convenção: `[ ]` significa **não executado**. A confirmação das políticas 
 ## 1. Revisão e preparação
 
 - [x] 1.1 Confirmar políticas locais PROD-07 e registrá-las em `docs/requirements/decisoes-pendentes.md`; verificação: confirmação explícita do solicitante em 02/11/2026 e conferência documental. Isso não equivale à aprovação de implementação.
-- [ ] 1.2 Revisar `proposal.md`, `design.md` e `specs/identity-email-link/spec.md` contra requisito v3.4 e decisões PROD-07/08; registrar aprovador humano, data, escopo e primeira fatia aprovada. A validação OpenSpec é somente estrutural.
-- [ ] 1.3 Para a primeira fatia, aprovar um desenho técnico mínimo: persistência/transições/migração; geração, proteção, expiração, consumo único e tentativas do código; envio de confirmação; limites contra abuso e respostas externas. Cobrir autorização apenas para os endpoints não autenticados de cadastro/confirmação incluídos; sessão, CSRF e política de senha ficam fora desta fatia. Decidir ou delimitar outras lacunas antes do fluxo afetado. Aprovação do desenho e autorização explícita de implementação são registros separados.
+- [x] 1.2 Revisar `proposal.md`, `design.md` e `specs/identity-email-link/spec.md` contra requisito v3.4 e decisões PROD-07/08; solicitante registrou aprovação humana em 02/11/2026 para a primeira fatia de cadastro/confirmação local. A validação OpenSpec é somente estrutural.
+- [x] 1.3 Aprovar desenho técnico mínimo da primeira fatia: persistência/transições/migração; geração, proteção, expiração, consumo único e tentativas do código; envio de confirmação; limites contra abuso e respostas externas; autorização dos endpoints não autenticados incluídos. Sessão, CSRF e política de senha ficam fora desta fatia. Aprovação e autorização explícita registradas em 02/11/2026; nenhuma implementação iniciada.
 
 ## 2. Primeira fatia: cadastro e confirmação local
 

@@ -21,4 +21,4 @@ Integração e autenticação Google, primeiro vínculo Google/local (incluindo 
 
 ## Governança
 
-**Status: proposta documental em revisão; NÃO aprovada para implementação.** As políticas locais de produto foram confirmadas pelo solicitante em 02/11/2026. Esta confirmação e a validação estrutural OpenSpec não constituem aprovação técnica nem autorização para executar tarefas de implementação. Antes do código, é necessária revisão humana do escopo, design, rastreabilidade e pendências técnicas; aprovador organizacional formal não identificado.
+**Status: desenho técnico e escopo da primeira fatia aprovados pelo solicitante em 02/11/2026; implementação explicitamente autorizada para cadastro e confirmação local, mas ainda não iniciada por solicitação do usuário.** A aprovação cobre o recorte e o desenho técnico mínimo documentados para essa fatia, não resolve mecanismos ou políticas ainda listados como pendentes e não aprova as fatias posteriores. A autorização atual não é instrução para começar a codificar neste turno. Aprovador organizacional formal não identificado.
