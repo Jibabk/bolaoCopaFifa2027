@@ -4,7 +4,7 @@
 
 ## 1. Estado Global do Loop
 
-* **Status da Execução:** `EM_PROGRESSO` — contrato de cadastro duplicado, proteção Fernet e retry oportunístico registrados; implementação autorizada ainda não iniciada por agente (dependências indisponíveis para executar testes). Não instalar dependências nem iniciar Docker sem autorização; tarefas OpenSpec 2.1–2.2 permanecem pendentes.
+* **Status da Execução:** `EM_PROGRESSO` — decisões de produto registradas; usuário autorizou instalação de dependências e Docker em 03/11/2026. Dependências Python instaladas em venv backend/.venv; Docker Compose rodando com backend, frontend e PostgreSQL. Implementação de código OpenSpec 2.1–2.2 ainda não iniciada. Tarefas permanecem pendentes.
 * **Turno Atual:** não controlado / **Limite Máximo de Turnos:** não definido.
 * **Orçamento de API Utilizado:** não disponível / **Teto Máximo:** não definido.
 * **Data/Hora da Última Atualização:** `2026-11-03` (horário local não confirmado).
@@ -117,8 +117,8 @@ Nenhuma tentativa de implementação descartada foi identificada nos registros d
 
 ## 7. Próximo Passo Imediato
 
-* **Tarefa Atual:** `Task 3.2 — cadastro/confirmação local (OpenSpec 2.1–2.2), com decisão funcional de duplicatas aprovada.`
-* **Ação Exata no Próximo Turno:** `Retomar implementação de OpenSpec 2.1–2.2 com outbox oportunístico e token original Fernet cifrado; revisar, testar e registrar limitações.`
+* **Tarefa Atual:** `Task 3.2 — cadastro/confirmação local (OpenSpec 2.1–2.2), em preparação para pausa.`
+* **Ação Exata no Próximo Turno:** `Ambiente pronto (venv, Docker). Próximo: agentes multiagentes para domínio (2.1) e endpoints (2.2) conforme contrato aprovado.`
 * **Condição de Sucesso do Turno:** `Contrato e proteção do token duplicado explícitos nos artifacts, validados; então retomar implementação autorizada.`
 
 ---
@@ -144,3 +144,4 @@ Nenhuma tentativa de implementação descartada foi identificada nos registros d
 | 03/11/2026 | Pausar implementação por incompatibilidade em cadastro duplicado | O agente de backend identificou conflito entre HTTP 202 incluindo token opaco e no-op sem reenvio em duplicatas, dado token de solicitação armazenado como hash e necessário para `/registrations/resend`; nenhum código foi alterado. Testes de aplicação não executados. | Um token recém-gerado não autentica solicitação existente; omitir token pode contrariar contrato; reter recuperável o token exige decisão explícita de proteção e ciclo de vida. | Implementação pausada; solicitar decisão humana sobre resposta/token para duplicata ou mecanismo alternativo compatível. |
 | 03/11/2026 | Decidir proteção recuperável do token para cadastro duplicado | O solicitante aprovou retornar o token opaco original sem reenviar código, preservado com Fernet usando chave dedicada estável em arquivo 0600 fora do Git, distinta da chave HMAC do código; falhar fechado sem chave válida e não registrar token/ciphertext/chave. Atualizados design, proposal, decisões pendentes, README backend, tasks e estado; validação OpenSpec estrita e git diff serão executadas antes da retomada. | A regra anterior de no-op sem reenvio conflitou com token armazenado somente como hash e a necessidade de o usuário reutilizá-lo em `/registrations/resend`. | Retomar implementação somente após registrar e validar o mecanismo criptográfico; tarefas OpenSpec 2.1–2.2 permanecem pendentes até implementação/testes. |
 | 03/11/2026 | Retomar implementação após decisões de token duplicado | Revisão de código independente confirmou: nenhuma alteração de código implementando Task 3.2 existe no working tree; apenas atualizações documentais descrevendo o contrato aprovado. `graft check` e `git diff --check` passaram. | A implementação está bloqueada por dependências ausentes (`fastapi`, `sqlalchemy`, `psycopg`, `passlib`, `pytest`); a instrução proíbe instalação sem autorização. | Registro de que código não foi implementado; tarefas OpenSpec 2.1–2.2 permanecem pendentes. Autorização para instalar dependências ou ambiente já provisionado é pré-requisito para avançar. |
+| 03/11/2026 | Preparar ambiente para pausa | Usuário autorizou instalação de dependências e Docker. Instaladas dependências Python em venv `backend/.venv`, criado venv com todas as deps incluindo `fastapi`, `sqlalchemy`, `psycopg-binary`, `passlib`, `bcrypt`, `cryptography`, `pytest`. Docker Compose rodando com backend (porta 8000), frontend (3000) e PostgreSQL (5432). Ambiente pronto para retomar implementação OpenSpec 2.1–2.2. | Dependências indisponíveis bloqueavam execução local; agora o ambiente local tem todas as ferramentas necessárias via venv e Docker. | Dependências e infraestrutura prontas; código de Tasks 2.1–2.2 permanece pendente. Para retomar: ativar venv (`source backend/.venv/bin/activate`) e executar agentes multiagentes conforme STATE.md. |
