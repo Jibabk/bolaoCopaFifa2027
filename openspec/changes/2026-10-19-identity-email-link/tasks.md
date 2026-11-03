@@ -1,6 +1,6 @@
 # Tarefas propostas: Cadastro local, verificação e admissão
 
-Convenção: `[ ]` significa **não executado**. A confirmação das políticas de produto locais em 02/11/2026 e a validação OpenSpec não aprovam o design técnico nem autorizam implementação. Nenhuma tarefa de código foi executada. Implementação permanece condicionada à revisão/aprovação humana e autorização explícita.
+Convenção: `[ ]` significa **não executado**. As políticas locais confirmadas em 02/11/2026, aprovação do desenho/escopo e autorização explícita da primeira fatia estão registradas. Defaults locais adicionais para respostas, limites, entrega de desenvolvimento, bcrypt 12 (senhas acima de 72 bytes rejeitadas), estado `pending_delivery` com retry/reconciliação e IP somente por `request.client.host`, retry oportunístico limitado de `pending_delivery` e preservação do token opaco original de cadastro duplicado com Fernet/chave dedicada foram aprovados em 03/11/2026. Tarefas 2.1–2.2 permanecem não executadas até validação da implementação; as demais tarefas não estão autorizadas por essas aprovações.
 
 ## 1. Revisão e preparação
 
