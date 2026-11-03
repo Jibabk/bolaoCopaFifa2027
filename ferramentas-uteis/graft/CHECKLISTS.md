@@ -3,8 +3,8 @@
 ## 1. Setup inicial (uma vez por projeto)
 - [ ] WSL/Ubuntu atualizado e projeto clonado em `~/` (não em `/mnt/c`)
 - [ ] `node -v` retorna 20 ou superior
-- [ ] `bash tools/graft-starter/setup-graft.sh --dry-run` executado e revisado
-- [ ] `bash tools/graft-starter/setup-graft.sh` executado sem erros
+- [ ] `bash ferramentas-uteis/graft/setup-graft.sh --dry-run` executado e revisado
+- [ ] `bash ferramentas-uteis/graft/setup-graft.sh` executado sem erros
 - [ ] Pastas `graft/` e `.claude/` existem
 - [ ] `git status` revisado; decisão sobre o que versionar registrada no `CLAUDE.md`
 - [ ] `CLAUDE.md` criado a partir de `CLAUDE.md.exemplo` e ajustado

@@ -71,3 +71,34 @@ Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspo
 ## Uso de subagentes
 
 O Claude Code descobre automaticamente os subagentes definidos em `.claude/agents/`; seus papéis e limites devem permanecer nos respectivos perfis, sem duplicação nesta instrução. Delegue quando a especialização ajudar a tarefa, mantendo coordenação e escopo claros. Requisitos aprovados e decisões humanas prevalecem sobre recomendações dos agentes. Nenhum agente resolve lacunas de produto, aprova mudanças em nome do usuário ou transforma artefatos OpenSpec em autorização de implementação.
+
+## Convenções
+- Idioma de commits e documentação: português do Brasil.
+- Padrão de commits:  Conventional Commits com emoji e mensagem do commit explicativa, clara e concisa em português do Brasil.
+- Nunca fazer commit direto na branch principal; sugerir criar branch apropriada (conventional) para cada tarefa ou funcionalidade para posteriormente o desenvolvedor abrir Merge Request (Gitlab) ou PR (Github).
+- Nunca incluir segredos, senhas ou tokens no código.
+
+## Uso do Graft (mapa do código)
+- Este repositório usa o Graft; os materiais de setup estão em [`ferramentas-uteis/graft/`](ferramentas-uteis/graft/), com [guia](ferramentas-uteis/graft/README.md), [checklists](ferramentas-uteis/graft/CHECKLISTS.md) e [script de setup](ferramentas-uteis/graft/setup-graft.sh).
+- Verifique se o comando `graft` está disponível com `command -v graft`.
+- Se `graft` não estiver disponível, informe o desenvolvedor e sugira:
+  - `npm install -g @nanonets/graft`
+  - ou, sem instalação global: `npx @nanonets/graft init`
+- Se `graft` estiver disponível, verifique se a pasta `graft/` existe.
+- Se `graft/` estiver ausente ou o grafo parecer desatualizado, execute `graft build`.
+- Para o fluxo completo de configuração, uso diário, PR (ou Merge Request) e solução de problemas, consulte [`ferramentas-uteis/graft/CHECKLISTS.md`](ferramentas-uteis/graft/CHECKLISTS.md).
+- O mapa fica em `graft/`.
+- Antes de editar uma função, verifique o impacto com `graft callers <símbolo>`.
+- Para localizar onde algo está, prefira `graft ask "<pergunta>"` ou `graft map` a varrer arquivos.
+- Após clonar o repositório ou trocar de branch, rode `graft build` se o grafo estiver desatualizado.
+- Não edite manualmente arquivos gerados em `graft/`.
+- Política de versionamento do Graft:
+  - Não versionar `graft/`.
+  - O Graft inclui `/graft/` no `.gitignore`; pode também criar `.ignore` para permitir que ferramentas de busca leiam o conteúdo ignorado pelo Git.
+  - Cada desenvolvedor executa `graft build` após clonar o repositório ou trocar de branch.
+  - Versionar apenas a configuração de integração criada em `.claude/`.
+
+## Regras para o agente
+- Faça mudanças pequenas e focadas; explique o que mudou e por quê.
+- Rode os testes antes de concluir uma tarefa.
+- Em caso de dúvida sobre requisito, pergunte antes de implementar.
