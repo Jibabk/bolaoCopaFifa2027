@@ -32,3 +32,13 @@ Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspo
 ## Uso de subagentes
 
 O Claude Code descobre automaticamente os subagentes definidos em `.claude/agents/`; seus papéis e limites devem permanecer nos respectivos perfis, sem duplicação nesta instrução. Delegue quando a especialização ajudar a tarefa, mantendo coordenação e escopo claros. Requisitos aprovados e decisões humanas prevalecem sobre recomendações dos agentes. Nenhum agente resolve lacunas de produto, aprova mudanças em nome do usuário ou transforma artefatos OpenSpec em autorização de implementação.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
