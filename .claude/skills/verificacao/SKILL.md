@@ -17,7 +17,9 @@ Somente as áreas alteradas desde `origin/main` (`--tudo` executa todas; `--base
 | `backend/app/**.py` | exige teste alterado em `backend/tests/` ou trailer `Sem-Teste: <motivo>` |
 | `frontend/` | `npm run lint`, `npm run type-check` |
 | Compose, Dockerfile, `.dockerignore`, `.env.example` | `docker compose config --quiet`; `docker compose build <serviço>` quando o Dockerfile ou o manifesto do serviço mudou |
-| `openspec/` | `openspec validate --all --strict` |
+| `openspec/` | `openspec validate --all --strict` (só o openspec nativo do WSL) |
+| `backend/`, `frontend/`, Compose, Dockerfile | exige skill `verify-*` do projeto gerada pelo pstack |
+| `frontend/(app\|components\|features)/`, `backend/app/entrypoints/`, `backend/app/bootstrap/main.py` | AVISO de superfície do usuário: exige `/pstack:maintain-verification-skill` antes do PR |
 | sempre | `git diff --check` |
 
 Pré-requisito ausente conta como falha: o portão fecha. Exemplos: `openspec` sem Node ≥ 20.19, Docker Desktop fechado, `.venv` ou `node_modules` ausentes.
@@ -28,9 +30,11 @@ O relatório fica em `.git/loop/verificacao.txt` e o carimbo em `.git/loop/verif
 
 1. Executar a "Verificação / Teste" específica da tarefa, quando houver, e guardar comando, código de saída e trecho da saída.
 2. Executar `scripts/verificar.sh`.
-3. Em FAIL, corrigir pelo especialista da área ou pela skill `testes` e repetir. No máximo 2 ciclos; depois escalar.
-4. Antes do PR, commitar tudo e executar `scripts/verificar.sh` de novo com a árvore limpa. Só essa execução gera o carimbo do HEAD.
-5. Levar para a seção "Testes e validação" do PR: as linhas PASS/FAIL, os testes pulados e a verificação da tarefa.
+3. Se a mudança toca `backend/`, `frontend/`, Compose ou Dockerfile, executar a skill `verify-*` do projeto (gerada por `/pstack:create-verification-skill`) seguindo Launch, Doctor, Drive das funcionalidades afetadas, Evidence e Cleanup. Guardar a evidência. Se a skill não existir, parar e pedir ao humano para rodar `/pstack:create-verification-skill`.
+4. Se o relatório trouxer o AVISO de superfície do usuário, o humano precisa rodar `/pstack:maintain-verification-skill` na branch antes do PR (a skill só pode ser acionada por humano). Se o resultado for `changed`, as correções da skill `verify-*` entram como commit na mesma branch, não em PR separado. Registrar o resultado (`clean`, `changed` ou `blocked`) no PR; `blocked` impede o PR.
+5. Em FAIL, corrigir pelo especialista da área ou pela skill `testes` e repetir. No máximo 2 ciclos; depois escalar.
+6. Antes do PR, commitar tudo e executar `scripts/verificar.sh` de novo com a árvore limpa. Só essa execução gera o carimbo do HEAD.
+7. Levar para a seção "Testes e validação" do PR: as linhas PASS/FAIL, os testes pulados, a verificação da tarefa, a evidência do `verify-*` e o resultado do `maintain-verification-skill` quando exigido.
 
 ## Proibido
 

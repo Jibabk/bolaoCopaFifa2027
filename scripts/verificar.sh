@@ -104,11 +104,26 @@ if tocou '(^|/)(docker-compose\.yml|Dockerfile|\.dockerignore)$|^\.env\.example$
 fi
 
 if tocou '^openspec/'; then
-  if openspec --version >/dev/null 2>&1; then
-    checar "openspec: validate --all --strict" . openspec validate --all --strict
+  # O openspec instalado no Windows (/mnt/...) travou o WSL em I/O; só o nativo é aceito.
+  OPENSPEC=$(command -v openspec || true)
+  if [ -n "$OPENSPEC" ] && [ "${OPENSPEC#/mnt/}" = "$OPENSPEC" ] && timeout 30 openspec --version >/dev/null 2>&1; then
+    checar "openspec: validate --all --strict" . timeout 300 openspec validate --all --strict
   else
-    falta "openspec executável no WSL (exige Node >= 20.19)"
+    falta "openspec instalado no WSL (exige Node >= 20.19; o do Windows em /mnt não é usado)"
   fi
+fi
+
+# Verificação comportamental (pstack): obrigatória quando o app muda.
+if tocou '^(backend|frontend)/|(^|/)(docker-compose\.yml|Dockerfile)$'; then
+  if ls .claude/skills/verify-*/SKILL.md .cursor/skills/verify-*/SKILL.md >/dev/null 2>&1; then
+    registrar "PASS  skill verify-* presente (executá-la é obrigatório pela skill verificacao)"
+  else
+    falta "skill verify-* do projeto; rode /pstack:create-verification-skill"
+  fi
+fi
+
+if tocou '^frontend/(app|components|features)/|^backend/app/(entrypoints/|bootstrap/main\.py$)'; then
+  registrar "AVISO superfície do usuário alterada: /pstack:maintain-verification-skill é obrigatório antes do PR"
 fi
 
 checar "git: diff --check" . git diff --check "$BASE"
