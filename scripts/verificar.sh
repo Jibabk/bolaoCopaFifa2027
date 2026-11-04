@@ -26,7 +26,10 @@ mkdir -p "$DIR_LOOP"
 rm -f "$CARIMBO"
 : > "$RELATORIO"
 
-ALTERADOS=$( { git diff --name-only "$BASE"...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u )
+# core.quotePath=false: caminhos com acento sairiam entre aspas e escapariam dos regex de área.
+ALTERADOS=$( { git -c core.quotePath=false diff --name-only "$BASE"...HEAD
+  git -c core.quotePath=false diff --name-only HEAD
+  git -c core.quotePath=false ls-files --others --exclude-standard; } | sort -u )
 FALHAS=0
 
 registrar() { printf '%s\n' "$*" | tee -a "$RELATORIO"; }
@@ -90,7 +93,7 @@ if tocou '^frontend/'; then
   fi
 fi
 
-if tocou '(^|/)(docker-compose\.yml|Dockerfile|\.dockerignore)$|^\.env\.example$'; then
+if tocou '(^|/)(docker-compose\.yml|Dockerfile|\.dockerignore)$|^\.env\.example$|^(backend|frontend)/(pyproject\.toml|package(-lock)?\.json)$'; then
   if docker info >/dev/null 2>&1; then
     checar "infra: docker compose config" . docker compose config --quiet
     for svc in backend frontend; do
@@ -115,7 +118,7 @@ fi
 
 # Verificação comportamental (pstack): obrigatória quando o app muda.
 if tocou '^(backend|frontend)/|(^|/)(docker-compose\.yml|Dockerfile)$'; then
-  if ls .claude/skills/verify-*/SKILL.md .cursor/skills/verify-*/SKILL.md >/dev/null 2>&1; then
+  if compgen -G '.claude/skills/verify-*/SKILL.md' >/dev/null || compgen -G '.cursor/skills/verify-*/SKILL.md' >/dev/null; then
     registrar "PASS  skill verify-* presente (executá-la é obrigatório pela skill verificacao)"
   else
     falta "skill verify-* do projeto; rode /pstack:create-verification-skill"
@@ -126,7 +129,8 @@ if tocou '^frontend/(app|components|features)/|^backend/app/(entrypoints/|bootst
   registrar "AVISO superfície do usuário alterada: /pstack:maintain-verification-skill é obrigatório antes do PR"
 fi
 
-checar "git: diff --check" . git diff --check "$BASE"
+# Contra o merge-base: avanços da main em arquivos que a branch não tocou não reprovam a branch.
+checar "git: diff --check" . git diff --check "$(git merge-base "$BASE" HEAD)"
 
 if [ "$FALHAS" -gt 0 ]; then
   registrar "RESULTADO: FALHOU ($FALHAS)"
@@ -134,6 +138,11 @@ if [ "$FALHAS" -gt 0 ]; then
 fi
 if [ -n "$(git status --porcelain)" ]; then
   registrar "RESULTADO: PASSOU, mas há alterações não commitadas; carimbo não gerado"
+  exit 0
+fi
+# --base alternativo é só diagnóstico: com --base HEAD nada seria checado.
+if [ "$TUDO" -eq 0 ] && [ "$BASE" != "origin/main" ]; then
+  registrar "RESULTADO: PASSOU com base não padrão ($BASE); carimbo não gerado"
   exit 0
 fi
 git rev-parse HEAD > "$CARIMBO"
