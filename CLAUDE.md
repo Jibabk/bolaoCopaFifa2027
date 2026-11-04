@@ -27,7 +27,7 @@ Precedência: requisitos aprovados → decisões de produto confirmadas → deci
 
 ## Qualidade e execução
 
-Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspondente às versões selecionadas; não invente versões, comandos, dependências ou scripts. Cubra regras de domínio, autorização, concorrência, idempotência, ranking e migrações com validação proporcional. Não há aplicação nem comandos de build/teste confirmados no repositório; não declare testes executados sem executá-los. Não crie `AGENTS.md` sem necessidade concreta de compatibilidade identificada.
+Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspondente às versões selecionadas; não invente versões, comandos, dependências ou scripts. Cubra regras de domínio, autorização, concorrência, idempotência, ranking e migrações com validação proporcional. Não declare testes executados sem executá-los. Após qualquer implementação, rode as skills `testes` e `verificacao`; antes de qualquer PR, `scripts/verificar.sh` precisa passar com a árvore limpa, e o hook `.claude/hooks/portao-pr.sh` bloqueia `gh pr create` sem esse carimbo. Não crie `AGENTS.md` sem necessidade concreta de compatibilidade identificada.
 
 ## Uso de subagentes
 
