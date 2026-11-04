@@ -16,6 +16,12 @@ services:
       backend:
         condition: service_healthy
     command: npm run dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - bolao-network
 
@@ -27,10 +33,16 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    # .env é opcional; as variáveis abaixo têm precedência sobre as do env_file.
+    env_file:
+      - path: .env
+        required: false
     environment:
       - PYTHONPATH=/app
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/bolao
       - ENVIRONMENT=development
+      # Montada a partir de POSTGRES_* (fonte única); driver psycopg 3 síncrono (ADR-001).
+      # Use senha sem caracteres especiais de URL.
+      - DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-bolao}
     depends_on:
       db:
         condition: service_healthy
@@ -51,11 +63,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=bolao
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-bolao}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d bolao"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -15,8 +15,8 @@ Monólito modular com DDD pragmático. O backend FastAPI expõe a API, o fronten
 
 Verificar e alinhar ao que o código expõe, sem presumir:
 
-- backend: o Compose foi alinhado em 19/10/2026 à rota `/live` de `main.py` (antes chamava `/health/live`). `/ready` ainda não consulta o banco. Nada foi validado por execução.
-- frontend: endpoint de health a definir (`/api/health` não existe).
+- backend: o Compose foi alinhado em 19/10/2026 à rota `/live` de `main.py` (antes chamava `/health/live`). `/ready` consulta o banco (`SELECT 1`, timeout de 3 s) e responde 503 sem detalhes quando indisponível; `/live` não depende do banco. Validado por execução em 30/10/2026.
+- frontend: `GET /api/health` (route handler) usado como healthcheck no Compose, validado em 30/10/2026.
 - postgres: `pg_isready`.
 
 Intervalos e tentativas: manter os valores já configurados em `docker-compose.yml`, revisando-os na implementação.
