@@ -33,6 +33,12 @@ out/
 .DS_Store
 Thumbs.db
 
+# Graft generated code map (rebuild locally with `graft build`)
+/graft/
+
+# Windows download metadata
+*:Zone.Identifier
+
 # Other AI agent tools & local temporary files
 .agents/
 .kiro/
