@@ -12,7 +12,7 @@ O operador (ou o healthcheck do Compose) consulta se cada serviço está vivo e 
 
 ## How to get to it (user POV)
 
-- Links "Healthcheck" da página inicial (apontam para `/live` na porta padrão).
+- Link "Healthcheck" da página inicial (aponta para `/live` na porta padrão).
 - Operador chamando `/live`, `/ready` e `/api/health` diretamente.
 - Healthchecks do `docker-compose.yml`, que usam `/live` no backend e `/api/health` no frontend.
 
@@ -28,7 +28,8 @@ Preconditions:
 - **Vivo sem banco.** Rode `$H get "$RUN_ID" backend /live live-db-parado`. Imprime `-> 200`.
 - **Banco volta.** Rode `$H compose "$RUN_ID" start db`. Repita `$H get "$RUN_ID" backend /ready ready-db-voltou` até `-> 200` (normalmente menos de 10 s). O corpo é `{"status":"ready"}`.
 - **Frontend.** Rode `$H get "$RUN_ID" frontend /api/health fe-health`. Imprime `-> 200`, com `"service":"bolao-frontend"`.
-- **Prova.** O `requests.log` mostra, em ordem: ready 200 → ready 503 → live 200 → ready 200. Também vale `$H logs "$RUN_ID"`, que mostra o stop/start do `db` no `compose.log`.
+- **Sem reinício.** Rode `$H compose "$RUN_ID" ps backend --format '{{.RunningFor}}'` antes do `stop db` e depois do 200 final. O tempo de execução só cresce.
+- **Prova.** O `requests.log` contém, nesta ordem (podendo haver outras linhas entre elas, como 503 de novas tentativas): ready 200 → ready 503 → live 200 → ready 200. Também vale `$H logs "$RUN_ID"`, que mostra o stop/start do `db` no `compose.log`.
 
 ## Gotchas
 
@@ -36,3 +37,4 @@ Preconditions:
 - O `/ready` usa `connect_timeout` de 3 s. Com o banco parado, a resposta 503 pode levar até cerca de 3 s, e um timeout do curl abaixo disso daria falso negativo.
 - Logo depois do `start db`, o Postgres pode recusar conexões por alguns segundos. Repita o GET em vez de concluir que houve regressão.
 - O `/ready` nunca deve expor a causa do erro (host, senha, driver). Um corpo diferente de `{"status":"unavailable"}` é falha de segurança, não só de forma.
+- Sem `DATABASE_URL` o `/ready` também devolve 503. A pilha da run sempre define a variável, então esse caso fica coberto só por `backend/tests/integration/test_ready.py`.

@@ -7,7 +7,7 @@ description: Sobe e dirige o Bolão Copa FIFA 2027 real (Next.js em web + FastAP
 
 Prova comportamento no app real. Não substitui `scripts/verificar.sh` nem os testes: complementa os dois com a pilha de verdade rodando.
 
-**Superfícies.** A principal é a web do Next.js (página inicial, 404). A API FastAPI (`/`, `/live`, `/ready`, `/docs`, `/openapi.json`) é a segunda superfície e sustenta a web. O produto ainda é um scaffold sem login, palpites ou ranking. Quando essas funcionalidades chegarem, entram em `features/`.
+**Superfícies.** A principal é a web do Next.js (página inicial, 404). A API FastAPI (`/`, `/live`, `/ready`, `/docs`, `/redoc`, `/openapi.json`) é a segunda superfície e sustenta a web. O produto ainda é um scaffold sem login, palpites ou ranking. Quando essas funcionalidades chegarem, entram em `features/`.
 
 **Harness.** O script `bin/verify-bolao.sh` faz tudo: compose isolado, `curl` e `psql` somente leitura. Não há navegador nem Playwright no ambiente, e o CLAUDE.md proíbe instalar dependências sem autorização. Por isso a prova da web é o HTML do SSR (todas as páginas atuais são server components, então o HTML já é o que o usuário vê). Quando surgir interação no cliente (formulários, `'use client'`), o HTML deixa de bastar: registre a lacuna e peça autorização ao humano para um navegador. Não declare como verificado o que só um navegador mostraria.
 
@@ -30,7 +30,7 @@ Pré-requisito: Docker Desktop aberto com integração WSL (`docker info` respon
 
 1. Gera `override.yml` com portas próprias e faz `docker compose up -d --build --wait` (até 420 s).
 2. Roda `alembic upgrade head` no backend. Hoje não há revisões, só a tabela `alembic_version`.
-3. Espera ficar **usável**: `/ready` = `ready` (banco consultado pela API) **e** a `/` do frontend devolve o título, ou seja, o `next dev` já compilou.
+3. Espera ficar **usável**: `/ready` = `ready` (banco consultado pela API) **e** a `/` do frontend devolve o heading "Bolão da Copa do Mundo Feminina", ou seja, o `next dev` já compilou.
 
 A pilha está pronta quando a última linha é:
 
