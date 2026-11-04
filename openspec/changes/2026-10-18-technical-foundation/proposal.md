@@ -29,6 +29,8 @@ Permite que as próximas changes do OpenSpec partam de um ambiente validado. Nã
 
 ## Governança humana
 
+Aprovação humana: Jean, 2026-11-04
+
 Aprovação registrada em 30/10/2026: o solicitante do projeto aprovou a implementação desta change na conversa com o Claude Code e escolheu o driver psycopg 3 (aprovador organizacional não identificado; registro informal, sem ata). Permanecem fora desta aprovação a ferramenta de verificação de fronteiras, a ferramenta de testes do frontend e as especificações PROD-01/TEC-01/PROD-07, que seguem pendentes de decisão humana.
 
 Este artefato exige aprovação humana antes da implementação. As tarefas devem citar esta proposta e manter a rastreabilidade entre requisito ou decisão e tarefa técnica.
