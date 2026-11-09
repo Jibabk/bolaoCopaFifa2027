@@ -63,7 +63,7 @@ O repositório encontra-se no estágio de **fundação documental e scaffold de 
 | **Backend (FastAPI)** | **Scaffold Estrutural** | Estrutura de diretórios DDD/Clean Architecture criada, `pyproject.toml` configurado, `Dockerfile` multi-stage presente. Módulos em `app/modules/` contêm apenas marcadores e `__init__.py`, sem regras implementadas. O entrypoint `app.bootstrap.main:app` existe e expõe `/`, `/live` e `/ready`; o `/ready` ainda não consulta o banco. |
 | **Frontend (Next.js)** | **Scaffold Estrutural** | Estrutura App Router criada (`app/`, `features/`, `components/`, `lib/`), `package.json`, `tsconfig.json` e `Dockerfile` presentes. Existem `layout.tsx`, `loading.tsx`, `not-found.tsx` e `page.tsx` básicos; `globals.css`, `public/`, lockfile e configuração do ESLint foram criados localmente em 19/10/2026 (ainda não commitados); instalação, build e lint **não foram validados**. |
 | **Banco de Dados & Migrações**| **Scaffold** | Serviço PostgreSQL 16 declarado no Compose. Diretório `backend/migrations/` contém apenas `.gitkeep`; schemas e tabelas Alembic ainda não foram inicializados. |
-| **Suíte de Testes** | **Scaffold** | Diretórios estruturados (`unit/`, `integration/`, `api/`, `contract/`), dependências declaradas (`pytest`, `ruff`, `mypy`), sem testes implementados. |
+| **Suíte de Testes** | **Scaffold / Parcial** | Diretórios estruturados (`unit/`, `integration/`, `api/`, `contract/`), dependências declaradas (`pytest`, `ruff`, `mypy`). Contém testes de contrato e autenticação implementados para o módulo de admin local em `backend/tests/api/test_local_admin.py` (7 casos cobrindo credenciais, cookie HttpOnly, isolamento de ambiente e sessão); testes das regras de domínio e ranking do bolão ainda não implementados. |
 
 **Decisão de identidade:** [HU-22/23](docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md) exigem verificar o endereço local novo ou alterado por código numérico de seis dígitos enviado a ele, com até três tentativas por verificação, antes de considerá-lo para vínculo Google/local por e-mail. Conta validada com identidade Google já vinculada pode autenticar-se novamente por `sub`. Isso não concede participação sem aprovação administrativa nem substitui a recuperação HU-21. Prova segura do primeiro vínculo, validade, reenvio/reinício de tentativas e efeitos da troca de endereço ainda exigem decisão; a [change de identidade](openspec/changes/2026-10-19-identity-email-link/proposal.md) é proposta, não autorização para implementar.
 
@@ -298,24 +298,22 @@ bolaoCopaFifa2027/
 flowchart TB
   subgraph Host["Máquina Host (Windows 11 / WSL 2 / Linux)"]
     DevBrowser["Navegador do Desenvolvedor\nhttp://localhost:3000"]
-    DevAPI["Swagger / Docs Backend\nhttp://localhost:8000/docs"]
+    DevAPI["Swagger / Docs Backend\nhttp://127.0.0.1:8000/docs\n(Loopback Restrito)"]
     DevDBClient["Cliente PostgreSQL (DBeaver/psql)\nlocalhost:5432"]
   end
 
-  subgraph DockerEnv["Rede Docker: bolao-network (bridge)"]
-    subgraph SvcFront["Serviço: frontend"]
+  subgraph DockerEnv["Redes Docker Isoladas"]
+    subgraph FrontendNet["Rede: frontend-network (bridge)"]
       NodeFront["Next.js Node Server\n(Porta Interna 3000)"]
     end
 
-    subgraph SvcBack["Serviço: backend"]
-      PyBack["FastAPI / Uvicorn\n(Porta Interna 8000)"]
-    end
-
-    subgraph SvcDB["Serviço: db"]
+    subgraph BackendNet["Rede: backend-network (bridge, internal: true)"]
       PostgresDB["PostgreSQL 16 Alpine\n(Porta Interna 5432)"]
     end
 
-    subgraph Volumes["Volumes"]
+    PyBack["FastAPI / Uvicorn\n(Porta Interna 8000)\nConectado a ambas as redes"]
+
+    subgraph Volumes["Volumes & Binds"]
       VolPG[("postgres_data\n(Volume Nomeado)")]
       BindFront[("./frontend -> /app\n+ anonymous /app/node_modules")]
       BindBack[("./backend -> /app")]
@@ -323,7 +321,7 @@ flowchart TB
   end
 
   DevBrowser -->|"Porta Exposta 3000:3000"| NodeFront
-  DevAPI -->|"Porta Exposta 8000:8000"| PyBack
+  DevAPI -->|"Porta Loopback 127.0.0.1:8000:8000"| PyBack
   DevDBClient -->|"Porta Exposta 5432:5432"| PostgresDB
 
   NodeFront -->|"NEXT_PUBLIC_API_URL\nhttp://localhost:8000 (via browser)"| PyBack
@@ -336,45 +334,52 @@ flowchart TB
 
 ### 6.2 Tabela de Serviços Docker Compose
 
-| Serviço | Imagem / Build Context | Portas Expostas | Dependências (`depends_on`) | Volumes Montados | Finalidade |
+| Serviço | Imagem / Build Context | Portas Expostas | Redes Conectadas | Volumes / Binds | Finalidade |
 |---|---|---|---|---|---|
-| `frontend` | Contexto `./frontend`<br>`Dockerfile` | `3000:3000` | `backend` | `./frontend:/app`<br>`/app/node_modules` | Interface visual do usuário e Server-Side Rendering |
-| `backend` | Contexto `./backend`<br>`Dockerfile` | `8000:8000` | `db` | `./backend:/app` | API REST, lógica de domínio, apuração e ranking |
-| `db` | `postgres:16-alpine` | `5432:5432` | Nenhuma | `postgres_data:/var/lib/postgresql/data` | Banco de dados relacional e persistência operacional |
+| `frontend` | Contexto `./frontend`<br>`Dockerfile` | `3000:3000` | `frontend-network` | `./frontend:/app`<br>`/app/node_modules` | Interface visual do usuário e Server-Side Rendering |
+| `backend` | Contexto `./backend`<br>`Dockerfile` | `127.0.0.1:8000:8000` (loopback) | `frontend-network`<br>`backend-network` | `./backend:/app` | API REST, lógica de domínio, apuração e ranking |
+| `db` | `postgres:16-alpine` | `5432:5432` | `backend-network` (`internal: true`) | `postgres_data:/var/lib/postgresql/data` | Banco de dados relacional e persistência operacional |
 
 ### 6.3 Inicialização, Redes e Volumes
 
-- **Rede interna:** Os containers comunicam-se pela rede bridge `bolao-network`. O backend conecta-se ao banco pelo hostname `db:5432`. O navegador do desenvolvedor acessa o frontend em `localhost:3000` e a API em `localhost:8000`.
+- **Isolamento por Redes:** Os containers comunicam-se através de duas redes bridge distintas:
+  1. `frontend-network`: conecta o `frontend` e o `backend`, permitindo que o cliente web acesse a API REST.
+  2. `backend-network` (`internal: true`): rede isolada que restringe o acesso ao banco de dados `db`, permitindo requisições exclusivamente a partir do `backend`.
+- **Exposição Restrita de Portas:** O `backend` expõe sua porta estritamente em `127.0.0.1:8000:8000` no host, impedindo exposição indevida para outras máquinas na rede local.
 - **Ordem de inicialização e prontidão:** O Compose define a ordem `frontend -> backend -> db`.
-  > **Nota de diagnóstico:** O `docker-compose.yml` define blocos `healthcheck`. O do backend foi alinhado em 19/10/2026 à rota `/live` de `backend/app/bootstrap/main.py`, mas **nenhum build ou `docker compose up` foi executado**; a validação real é tarefa da change `2026-10-18-technical-foundation`.
+  > **Nota de diagnóstico:** O `docker-compose.yml` define blocos `healthcheck`. O do backend foi alinhado à rota `/live` de `backend/app/bootstrap/main.py`, mas a validação de build é realizada pelo time.
 - **Persistência de dados:** O volume nomeado `postgres_data` armazena os dados do PostgreSQL.
   - `docker compose down` encerra os containers e **preserva** o volume com os dados.
   - `docker compose down -v` encerra os containers e **exclui permanentemente** o volume `postgres_data`.
-  - **Aviso:** Volumes locais não constituem backup (OPS-02). Não confie neles para retenção durável sem procedimentos formais.
-- **Hot-Reload e Bind Mounts:** O código-fonte local (`./frontend` e `./backend`) é montado diretamente dentro de `/app` nos containers, permitindo atualização automática em desenvolvimento. O volume anônimo `/app/node_modules` impede que a pasta local sobrescreva as dependências instaladas no container.
+  - **Aviso:** Volumes locais não constituem backup (OPS-02).
+- **Hot-Reload e Bind Mounts:** O código-fonte local (`./frontend` e `./backend`) é montado diretamente dentro de `/app` nos containers. O volume anônimo `/app/node_modules` impede que a pasta local sobrescreva as dependências do container.
 
-### 6.4 Variáveis de Ambiente (`.env.example`)
+### 6.4 Variáveis de Ambiente (`.env.example` e `LOCAL_ADMIN_PASSWORD`)
 
-O `.env.example` é um modelo para a configuração futura. O Compose ainda define diretamente variáveis para os serviços e não repassa automaticamente os valores de `.env` ao frontend e ao backend; copiar o arquivo não altera, por si só, credenciais, URLs ou configurações da aplicação. A integração das variáveis deve ser decidida e validada antes de depender dela.
+O arquivo `.env.example` fornece o modelo para configuração de desenvolvimento. O Docker Compose interpola automaticamente o arquivo `.env` na raiz.
+
+> ⚠️ **Atenção:** A variável `LOCAL_ADMIN_PASSWORD` possui validação estrita (`${LOCAL_ADMIN_PASSWORD:?Configure LOCAL_ADMIN_PASSWORD...}`) no `docker-compose.yml`. Sem configurá-la, o Docker Compose **recusará iniciar os serviços**.
 
 ```bash
 cp .env.example .env
+echo "LOCAL_ADMIN_PASSWORD=sua-senha-local-segura" >> .env
 ```
 
 | Variável | Padrão Local | Descrição / Sensibilidade |
 |---|---|---|
+| `LOCAL_ADMIN_PASSWORD` | *(obrigatória)* | Senha de desenvolvimento para autenticação no admin local (`/admin/session`). O Compose falha se ausente. |
 | `NODE_ENV` | `development` | Ambiente de execução do Node.js |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | URL pública da API acessada pelo navegador do cliente |
 | `PYTHONPATH` | `/app` | Raiz de resolução de módulos do Python no backend |
 | `ENVIRONMENT` | `development` | Ambiente do backend (ativa docs interativas OpenAPI) |
-| `SECRET_KEY` | *(valor padrão no .env.example)* | Chave criptográfica para geração de tokens locais (min. 32 chars). **Substituir fora de dev** |
-| `PASSWORD_RESET_TOKEN_EXPIRE_MINUTES` | `60` | Tempo de expiração do token de recuperação de senha (entre 30 e 60 min, regra aprovada) |
+| `SECRET_KEY` | *(valor no .env.example)* | Chave criptográfica para tokens locais (min. 32 chars). **Substituir fora de dev** |
+| `PASSWORD_RESET_TOKEN_EXPIRE_MINUTES` | `60` | Tempo de expiração do token de recuperação de senha |
 | `POSTGRES_DB` | `bolao` | Nome da base de dados relacional |
 | `POSTGRES_USER` | `postgres` | Usuário administrador do PostgreSQL |
 | `POSTGRES_PASSWORD` | `postgres` | Senha de desenvolvimento do PostgreSQL |
 | `POSTGRES_HOST` | `db` | Host do banco dentro da rede Docker |
 | `POSTGRES_PORT` | `5432` | Porta interna do banco |
-| `DATABASE_URL` | `postgresql://postgres:postgres@db:5432/bolao` | Exemplo ainda não validado; selecionar driver e configurar URL compatível com a direção síncrona do ADR-001 |
+| `DATABASE_URL` | `postgresql://postgres:postgres@db:5432/bolao` | Conexão SQLAlchemy síncrona com PostgreSQL |
 | `TZ` | `America/Sao_Paulo` | Fuso horário oficial padronizado (Horário de Brasília / UTC-3) |
 
 ### 6.5 Compatibilidade Windows 11 com WSL 2 / Ubuntu
@@ -404,9 +409,14 @@ Para desenvolvedores no Windows 11 com Docker Desktop e WSL 2:
    cd bolaoCopaFifa2027
    ```
 
-2. **Consulte o modelo de variáveis de ambiente:** `.env.example` descreve valores de desenvolvimento, mas o Compose ainda não os repassa aos serviços. Se precisar de uma cópia local, use `cp .env.example .env`; não presuma que editar `.env` alterará o comportamento dos containers.
+2. **Configure as variáveis de ambiente (Obrigatório):**
+   O `docker-compose.yml` exige a definição da senha do administrador local. Copie o exemplo e defina a variável:
+   ```bash
+   cp .env.example .env
+   echo "LOCAL_ADMIN_PASSWORD=sua-senha-local-segura" >> .env
+   ```
 
-3. **Após validação da fundação técnica, construa e inicie os containers:** os comandos abaixo são referências para a etapa de validação pelo time; o build e a inicialização ainda não foram executados neste projeto.
+3. **Construa e inicie os containers com Docker Compose:**
    ```bash
    docker compose up --build
    ```
@@ -434,6 +444,9 @@ Para desenvolvedores no Windows 11 com Docker Desktop e WSL 2:
 ### 7.4 Comandos Operacionais Úteis
 
 ```bash
+# Ativar ambiente virtual Python do backend (se operando fora do Docker)
+source backend/.venv/bin/activate
+
 # Exibir logs em tempo real de todos os serviços
 docker compose logs -f
 
@@ -445,6 +458,9 @@ docker compose restart backend
 
 # Reconstruir imagens após alteração em Dockerfiles ou dependências
 docker compose up --build -d
+
+# Conectar ao banco PostgreSQL rodando no container
+docker compose exec db psql -U postgres -d bolao
 
 # Encerrar os serviços mantendo o volume do banco de dados
 docker compose down
@@ -517,15 +533,17 @@ flowchart LR
 ### 9.1 Ferramentas e Comandos
 
 #### Backend (Python)
-As ferramentas estão declaradas em `backend/pyproject.toml`:
+As ferramentas estão declaradas em `backend/pyproject.toml`. Antes de executar comandos localmente fora do container, ative o ambiente virtual:
 ```bash
+source backend/.venv/bin/activate
+
 # Executar a suíte de testes com cobertura
 pytest
 
 # Executar apenas testes unitários rápidos
 pytest tests/unit
 
-# Executar testes de integração (requer PostgreSQL ativo)
+# Executar testes de integração (requer PostgreSQL ativo via Docker)
 pytest tests/integration
 
 # Checagem estática de tipos
@@ -569,6 +587,8 @@ Toda a documentação especializada reside no diretório `docs/` e na raiz. Util
 
 | Documento | Caminho Relativo | Finalidade e Quando Consultar |
 |---|---|---|
+| **Estado Operacional & Âncora** | [`docs/STATE.md`](docs/STATE.md) | **Âncora cognitiva primária.** Estado atual, fila de tarefas, log append-only e histórico de tentativas (obrigatório ler no início de cada turno). |
+| **Guia de Onboarding** | [`docs/onboarding-08-11-2026.md`](docs/onboarding-08-11-2026.md) | Onboarding detalhado para novos desenvolvedores com arquitetura e stack. |
 | **Requisitos do Produto** | [`docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md`](docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md) | **Fonte normativa v3.4.** Regras v3.2 preservadas; HU-22 exige reverificação do endereço local alterado e limita a três tentativas por verificação; HU-23 cobre o retorno Google de identidade já vinculada. |
 | **Decisões e Pendências** | [`docs/requirements/decisoes-pendentes.md`](docs/requirements/decisoes-pendentes.md) | **Registro canônico v1.6.** Consultar decisões registradas e lacunas residuais de PROD, TEC e OPS; o título do arquivo permanece por compatibilidade com referências existentes. |
 | **Proposta de Gamificação** | [`docs/requirements/PROD-06-criterios-badges-gamificacao.md`](docs/requirements/PROD-06-criterios-badges-gamificacao.md) | Catálogo de badges aprovado em 19/10/2026. A implementação segue OpenSpec; seguem bloqueadas as partes que dependem de resultado definitivo (PROD-06.5), partidas canceladas (PROD-06.6) e reabertura de prazo. |
