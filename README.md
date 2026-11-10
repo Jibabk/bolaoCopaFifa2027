@@ -53,11 +53,11 @@ O sistema é uma aplicação web moderna e responsiva voltada a um grupo privado
 
 ## 2. Estado Atual do Projeto
 
-O repositório encontra-se no estágio de **fundação documental e scaffold de infraestrutura**. Não há código de negócio implementado; existem apenas o entrypoint de healthcheck do backend e uma página placeholder no frontend.
+O repositório encontra-se no estágio de **fundação documental e scaffold de infraestrutura**, sem os fluxos de negócio do bolão implementados. Há uma exceção funcional restrita para login administrativo local de desenvolvimento (identidade `admin`, endpoints de sessão e interface), além do entrypoint de healthcheck e da página inicial; essa exceção não implementa cadastro/admissão de participantes nem provisionamento administrativo fora do ambiente local.
 
 | Área | Estado Real | Detalhe |
 |---|---|---|
-| **Documentação Canônica** | **Registrada** | Requisitos v3.4 (HU-22/23), Decisões Pendentes v1.5, Arquitetura v0.4, ADR-001 e critérios PROD-06 (aprovados em 19/10/2026, com pendências); detalhes de vínculo/segurança ainda abertos. |
+| **Documentação Canônica** | **Registrada** | Requisitos v3.4 (HU-22/23), Decisões e Pendências v1.6, Arquitetura v0.4, ADR-001 e critérios PROD-06 (aprovados em 19/10/2026, com pendências); detalhes de vínculo/segurança ainda abertos. |
 | **Governança SDD** | **Scaffold documental** | OpenSpec configurado (`openspec/config.yaml`, com `context` e `rules`) e comandos/skills em `.claude/`. Changes `2026-10-18-technical-foundation` e `2026-10-19-identity-email-link` estão propostas; validação sintática não equivale a aprovação nem validação do build. |
 | **Topologia Local (Docker)** | **Configurada** | `docker-compose.yml` estruturado com 3 serviços (`frontend`, `backend`, `db`), rede bridge e volume persistente. |
 | **Backend (FastAPI)** | **Scaffold Estrutural** | Estrutura de diretórios DDD/Clean Architecture criada, `pyproject.toml` configurado, `Dockerfile` multi-stage presente. Módulos em `app/modules/` contêm apenas marcadores e `__init__.py`, sem regras implementadas. O entrypoint `app.bootstrap.main:app` expõe `/`, `/live` e `/ready`; desde 30/10/2026 o `/ready` consulta o PostgreSQL (`SELECT 1`) com psycopg 3 síncrono e responde 503 quando o banco está indisponível; build e `up --wait` validados em 30/10/2026. |
@@ -261,7 +261,7 @@ bolaoCopaFifa2027/
 │   │   ├── plano-reestruturacao-documentacao.md # Plano de auditoria executado
 │   │   └── revisao-arquitetura-multiagentes.md  # Revisão multiagentes e consolidação
 │   └── requirements/        # Requisitos e decisões do produto
-│       ├── decisoes-pendentes.md              # Registro canônico de decisões v1.5
+│       ├── decisoes-pendentes.md              # Registro canônico de decisões v1.6
 │       ├── PROD-06-criterios-badges-gamificacao.md # Critérios de badges (aprovados em 19/10/2026; pendências 06.5/06.6)
 │       └── requisitos-bolao-copa-mundo-feminina-2027.md # Fonte normativa v3.4
 ├── frontend/                # Aplicação Frontend (Next.js 14 / TypeScript)
@@ -570,7 +570,7 @@ Toda a documentação especializada reside no diretório `docs/` e na raiz. Util
 | Documento | Caminho Relativo | Finalidade e Quando Consultar |
 |---|---|---|
 | **Requisitos do Produto** | [`docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md`](docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md) | **Fonte normativa v3.4.** Regras v3.2 preservadas; HU-22 exige reverificação do endereço local alterado e limita a três tentativas por verificação; HU-23 cobre o retorno Google de identidade já vinculada. |
-| **Decisões Pendentes** | [`docs/requirements/decisoes-pendentes.md`](docs/requirements/decisoes-pendentes.md) | **Registro canônico v1.5.** Consultar status PROD, TEC, OPS, lacunas do primeiro vínculo e direções arquiteturais aprovadas. |
+| **Decisões e Pendências** | [`docs/requirements/decisoes-pendentes.md`](docs/requirements/decisoes-pendentes.md) | **Registro canônico v1.6.** Consultar decisões registradas e lacunas residuais de PROD, TEC e OPS; o título do arquivo permanece por compatibilidade com referências existentes. |
 | **Proposta de Gamificação** | [`docs/requirements/PROD-06-criterios-badges-gamificacao.md`](docs/requirements/PROD-06-criterios-badges-gamificacao.md) | Catálogo de badges aprovado em 19/10/2026. A implementação segue OpenSpec; seguem bloqueadas as partes que dependem de resultado definitivo (PROD-06.5), partidas canceladas (PROD-06.6) e reabertura de prazo. |
 | **Arquitetura de Software** | [`docs/architecture/arquitetura-software.md`](docs/architecture/arquitetura-software.md) | **Proposta v0.4**, alinhada às direções aprovadas em [ADR-001](docs/architecture/decisoes-tecnicas/ADR-001-vsa-monorepo-e-persistencia.md); detalhes técnicos ainda exigem design. |
 | **Revisão Multiagentes** | [`docs/architecture/revisao-arquitetura-multiagentes.md`](docs/architecture/revisao-arquitetura-multiagentes.md) | Relatório da auditoria técnica que consolidou o monólito modular e descartou microserviços/filas prematuras. |

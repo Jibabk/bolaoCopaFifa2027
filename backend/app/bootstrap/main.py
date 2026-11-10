@@ -5,10 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.bootstrap.database import check_database
+from app.modules.identity.local_admin import router as local_admin_router
 
 app = FastAPI(
-    title="Bolão Copa 2027", version="0.1.0", description="API do Bolão da Copa do Mundo Feminina"
+    title="Bolão Copa 2027",
+    version="0.1.0",
+    description="API do Bolão da Copa do Mundo Feminina",
 )
+
+app.include_router(local_admin_router)
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 

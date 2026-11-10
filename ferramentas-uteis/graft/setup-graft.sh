@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # setup-graft.sh: configura o Graft para Claude Code no projeto atual (WSL/Ubuntu).
-# Uso: bash tools/graft-starter/setup-graft.sh [--dry-run] [--help]
+# Uso: bash ferramentas-uteis/graft/setup-graft.sh [--dry-run] [--help]
 set -euo pipefail
 
 DRY_RUN=0
@@ -60,4 +60,4 @@ fi
 [ -d .claude ] && log "OK: pasta .claude/ presente." || log "AVISO: pasta .claude/ não encontrada."
 
 log "Concluído. Abra uma NOVA sessão do Claude Code na raiz do projeto."
-log "Confira 'git status' e siga o CHECKLISTS.md."
+log "Confira 'git status' e siga ferramentas-uteis/graft/CHECKLISTS.md."
