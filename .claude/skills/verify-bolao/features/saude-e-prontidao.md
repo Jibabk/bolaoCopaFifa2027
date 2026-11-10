@@ -28,13 +28,13 @@ Preconditions:
 - **Vivo sem banco.** Rode `$H get "$RUN_ID" backend /live live-db-parado`. Imprime `-> 200`.
 - **Banco volta.** Rode `$H compose "$RUN_ID" start db`. Repita `$H get "$RUN_ID" backend /ready ready-db-voltou` até `-> 200` (normalmente menos de 10 s). O corpo é `{"status":"ready"}`.
 - **Frontend.** Rode `$H get "$RUN_ID" frontend /api/health fe-health`. Imprime `-> 200`, com `"service":"bolao-frontend"`.
-- **Sem reinício.** Rode `$H compose "$RUN_ID" ps backend --format '{{.RunningFor}}'` antes do `stop db` e depois do 200 final. O tempo de execução só cresce.
-- **Prova.** O `requests.log` contém, nesta ordem (podendo haver outras linhas entre elas, como 503 de novas tentativas): ready 200 → ready 503 → live 200 → ready 200. Também vale `$H logs "$RUN_ID"`, que mostra o stop/start do `db` no `compose.log`.
+- **Sem reinício.** Antes do `stop db` e depois do 200 final, rode `docker inspect -f '{{.State.StartedAt}}' "$($H compose "$RUN_ID" ps -q backend)" | tee -a $E/sem-reinicio.txt`. As duas linhas são idênticas. Não use `{{.RunningFor}}`: ele conta desde a criação do container e não muda num restart (medido na run `maintain-2`).
+- **Prova.** O `requests.log` contém, nesta ordem (podendo haver outras linhas entre elas, como 503 de novas tentativas): ready 200 → ready 503 → live 200 → ready 200. Cada linha traz só hora, URL e status, sem o nome da evidência, então compare pelo caminho e pelo status. `$H logs "$RUN_ID"` grava no `compose.log` as linhas do Postgres `database system is shut down` e `database system is ready to accept connections`. Os eventos de stop/start do Compose não entram no log.
 
 ## Gotchas
 
 - Não deixe o banco parado: o `doctor` e as outras funcionalidades falham. Sempre rode `start db` no fim.
-- O `/ready` usa `connect_timeout` de 3 s. Com o banco parado, a resposta 503 pode levar até cerca de 3 s, e um timeout do curl abaixo disso daria falso negativo.
+- O `/ready` usa `connect_timeout` de 3 s, mas com o banco parado a resposta 503 levou 4,0 s na run `maintain-2`, tanto por `$H get` quanto por `curl` direto. O `$H get` não define timeout. Num `curl` avulso, use `--max-time` de pelo menos 10 s para não ter falso negativo.
 - Logo depois do `start db`, o Postgres pode recusar conexões por alguns segundos. Repita o GET em vez de concluir que houve regressão.
 - O `/ready` nunca deve expor a causa do erro (host, senha, driver). Um corpo diferente de `{"status":"unavailable"}` é falha de segurança, não só de forma.
 - Sem `DATABASE_URL` o `/ready` também devolve 503. A pilha da run sempre define a variável, então esse caso fica coberto só por `backend/tests/integration/test_ready.py`.

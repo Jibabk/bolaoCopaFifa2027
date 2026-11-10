@@ -2,8 +2,14 @@
 
 **Versão:** 1.0  
 **Data:** 18/10/2026  
-**Status:** Decisão técnica para aprovação  
+**Status:** Aprovada em 10/11/2026 por Jean, solicitante do projeto (registro informal, sem ata; aprovador organizacional não identificado)\
 **Referência:** Requisitos v3.2 (PROD-01, PROD-02, PROD-05), Revisão Arquitetural Multiagentes
+
+> **Escopo da aprovação (10/11/2026):**
+> - A especificação foi aprovada como está, incluindo **409 Conflict** para palpite no corte ou depois dele (§5.3). Isso diverge do texto do requisito v3.4, §1.3.3 (`403 Forbidden` / `"Prazo encerrado"`); a decisão está registrada em `docs/requirements/decisoes-pendentes.md` e o requisito ainda precisa ser atualizado.
+> - Sincronização NTP/PTP (§2.2), monitoramento de *clock drift* e health check de sincronização (§2.3, §10) são **recomendações operacionais**, não critérios de aceite no escopo local decidido.
+> - As regras do requisito v3.2 citadas aqui foram preservadas na v3.4.
+> - Continuam abertos: proxy ou load balancer confiável, caso exista à frente do backend, e proteção contra replay da requisição.
 
 ---
 
@@ -28,6 +34,8 @@ Este documento especifica a implementação técnica do corte confiável de palp
 - **Exibição:** Conversão para BRT (UTC-3) ocorre apenas na camada de apresentação (frontend).
 
 ### 2.3 Validação de Sincronização
+
+> Recomendação operacional (ver escopo da aprovação); não é critério de aceite no ambiente local.
 - Monitoramento contínuo de *clock drift* entre instâncias (alertas se desvio > 100ms)
 - Health check que valida sincronização NTP antes de aceitar tráfego
 
@@ -99,7 +107,7 @@ Seja:
 - **422 Unprocessable Entity** — Payload inválido (ex.: placar negativo, partida inexistente)
 - **403 Forbidden** — Participante não autorizado (ex.: `PENDING_APPROVAL`, `BLOCKED`)
 
-> **Nota:** O requisito v3.2 menciona `403 Forbidden` ou `"Prazo encerrado"`. A especificação técnica adota **409 Conflict** por ser semanticamente correto para conflito de estado (recurso não mais editável), mantendo mensagem amigável no body.
+> **Nota:** O requisito v3.2 menciona `403 Forbidden` ou `"Prazo encerrado"`. A especificação técnica adota **409 Conflict** por ser semanticamente correto para conflito de estado (recurso não mais editável), mantendo mensagem amigável no body. **Decisão (10/11/2026):** 409 aceito pelo solicitante do projeto; o texto do requisito precisa ser atualizado.
 
 ### 5.4 Requisição Recebida Antes do Corte, Processada Depois
 - Se `received_at < cutoff_time` mas a transação commita *após* o cutoff: **ACEITO**.
@@ -233,7 +241,7 @@ CREATE TABLE prediction_audit_log (
 - [ ] Admin `PATCH /matches/{id}/kickoff` usa `SELECT FOR UPDATE` na mesma linha
 - [ ] Índices criados, migrações versionadas (Alembic)
 - [ ] Testes automatizados cobrem TC-01 a TC-06
-- [ ] Monitoramento de *clock drift* entre instâncias ativo
+- [ ] Monitoramento de *clock drift* entre instâncias ativo (recomendação operacional; fora do escopo local)
 
 ---
 
