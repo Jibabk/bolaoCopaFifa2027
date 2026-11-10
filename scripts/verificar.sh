@@ -67,6 +67,7 @@ if tocou '^backend/'; then
     checar "backend: ruff check" backend .venv/bin/ruff check .
     checar "backend: ruff format --check" backend .venv/bin/ruff format --check .
     checar "backend: mypy app" backend .venv/bin/mypy app
+    checar "backend: lint-imports" backend .venv/bin/lint-imports
     checar "backend: pytest" backend pytest_backend
   else
     falta "backend/.venv com as dependências de dev"

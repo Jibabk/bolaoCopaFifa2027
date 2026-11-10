@@ -24,6 +24,7 @@ dev = [
     "httpx>=0.24.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0",
+    "import-linter>=2.16",
 ]
 
 [build-system]
@@ -55,3 +56,23 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
 strict_optional = true
+
+[tool.importlinter]
+root_package = "app"
+
+[[tool.importlinter.contracts]]
+name = "app.shared não importa app.modules, app.bootstrap nem app.entrypoints"
+type = "forbidden"
+source_modules = ["app.shared"]
+forbidden_modules = ["app.modules", "app.bootstrap", "app.entrypoints"]
+
+[[tool.importlinter.contracts]]
+name = "app.modules não importa app.bootstrap nem app.entrypoints"
+type = "forbidden"
+source_modules = ["app.modules"]
+forbidden_modules = ["app.bootstrap", "app.entrypoints"]
+
+[[tool.importlinter.contracts]]
+name = "Módulos de app.modules são independentes entre si"
+type = "independence"
+modules = ["app.modules.*"]
