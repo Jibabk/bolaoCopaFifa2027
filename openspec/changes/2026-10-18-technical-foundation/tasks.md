@@ -26,20 +26,21 @@ Convenção: [x] só após executar e registrar a verificação. Caminhos marcad
   - Verificação / Teste: alembic --version e verificação da configuração de migração; autogeração somente após existirem modelos/metadata aprovados e banco acessível
   - Verificação registrada (30/10/2026): `alembic --version` (1.20.1) e `alembic current` ok no host e no container contra o PostgreSQL; sem `DATABASE_URL` o env.py falha com erro explícito. Sem metadata/autogeração (modelos não aprovados); `versions/` vazio.
 
-- [ ] Requisito / Decisão: Especificações técnicas PROD-01/TEC-01/PROD-07
-  - Tarefa Técnica: Manter as especificações técnicas e aguardar aprovação humana
-  - Arquivo / Componente: docs/architecture/decisoes-tecnicas/PROD-01-corte-confiavel-palpites.md, docs/architecture/decisoes-tecnicas/TEC-01-PROD-07-autenticacao-admissao.md
-  - Verificação / Teste: grep -n "para aprovação" nos dois arquivos de docs/architecture/decisoes-tecnicas/
+- [x] Requisito / Decisão: Especificações técnicas PROD-01/TEC-01/PROD-07 (aprovação de Jean em 10/11/2026)
+  - Tarefa Técnica: Registrar a aprovação integral de PROD-01 (com 409 Conflict no corte) e a aprovação parcial de TEC-01/PROD-07 nos documentos e em decisoes-pendentes.md
+  - Arquivo / Componente: docs/architecture/decisoes-tecnicas/PROD-01-corte-confiavel-palpites.md, docs/architecture/decisoes-tecnicas/TEC-01-PROD-07-autenticacao-admissao.md, docs/requirements/decisoes-pendentes.md
+  - Verificação / Teste: grep -n '^\*\*Status:\*\* Aprovada' nos dois arquivos de docs/architecture/decisoes-tecnicas/ (uma linha por arquivo) e grep -n '(especificação técnica)' docs/requirements/decisoes-pendentes.md (linhas de PROD-01 e TEC-01/PROD-07)
+  - Verificação registrada (10/11/2026): o grep de Status retornou a linha 5 de cada arquivo ("Aprovada em 10/11/2026" e "Aprovada parcialmente em 10/11/2026"); o grep em decisoes-pendentes.md retornou as linhas 211 e 212.
 
-- [ ] Requisito / Decisão: Isolamento de dependências entre módulos
-  - Tarefa Técnica: Escolher e configurar a ferramenta de verificação de imports após decisão humana
-  - Arquivo / Componente: backend/pyproject.toml (a alterar)
-  - Verificação / Teste: Comando da ferramenta falha ao introduzir import proibido
+- [ ] Requisito / Decisão: Isolamento de dependências entre módulos (ADR-001; import-linter aprovado em 10/11/2026)
+  - Tarefa Técnica: Adicionar o import-linter às dependências de dev e configurar em backend/pyproject.toml, com root_package app, os três contratos da seção "Isolamento de dependências" do design.md: app.shared não importa app.modules, app.bootstrap nem app.entrypoints; app.modules não importa app.bootstrap nem app.entrypoints; os módulos de app.modules são independentes entre si. Incluir lint-imports nos checks de backend de scripts/verificar.sh
+  - Arquivo / Componente: backend/pyproject.toml (a alterar), scripts/verificar.sh (a alterar)
+  - Verificação / Teste: cd backend && .venv/bin/lint-imports passa na árvore atual e falha ao adicionar temporariamente em backend/app/shared/ um módulo com import app.modules.identity; scripts/verificar.sh --tudo registra "backend: lint-imports"
 
-- [ ] Requisito / Decisão: Modelo de entrada/saída
-  - Tarefa Técnica: Configurar a aplicação FastAPI e os modelos Pydantic base
-  - Arquivo / Componente: backend/app/bootstrap/main.py
-  - Verificação / Teste: curl -fsS http://localhost:8000/live e http://localhost:8000/ready após docker compose up --wait
+- [ ] Requisito / Decisão: Modelo de entrada/saída (arquitetura §198/§201; escopo reduzido aprovado em 10/11/2026, sem mudança de contrato)
+  - Tarefa Técnica: Criar a classe Settings (pydantic-settings) com CORS_ORIGINS e DATABASE_URL opcional e usá-la no lugar de os.getenv em main.py e database.py; declarar modelos de resposta Pydantic para /live e /ready que reproduzam exatamente o JSON atual, inclusive o 503 {"status": "unavailable"}. Envelope de erro, paginação e modelos base por módulo ficam fora desta tarefa
+  - Arquivo / Componente: backend/app/bootstrap/settings.py (a criar), backend/app/bootstrap/main.py, backend/app/bootstrap/database.py, backend/tests/
+  - Verificação / Teste: novo teste que exige que /openapi.json referencie schemas de resposta para /live (200) e /ready (200 e 503) e falha antes da mudança; novo teste unitário de leitura de CORS_ORIGINS pela Settings; backend/tests/integration/test_ready.py continua passando sem alteração; curl -fsS http://localhost:8000/live e http://localhost:8000/ready após docker compose up --wait retornam o mesmo JSON de antes
 
 - [x] Requisito / Decisão: Build reproduzível do backend
   - Tarefa Técnica: Declarar pacotes no setuptools, garantir README.md no passo de instalação, copiar os executáveis (uvicorn) para o estágio final, adicionar __init__.py e .dockerignore

@@ -2,10 +2,20 @@
 
 **Versão:** 1.1 (minuta anotada; proposta original de 18/10/2026 preservada para revisão)
 **Data:** 19/10/2026
-**Status:** Minuta técnica NÃO aprovada integralmente. Esquema SQL, estados, JWT/refresh, gatilhos e políticas de exclusão abaixo são apenas exemplos anteriores à decisão de 19/10/2026; **não usar como instruções de implementação**.
+**Status:** Aprovada parcialmente em 10/11/2026 por Jean, solicitante do projeto (registro informal, sem ata; aprovador organizacional não identificado). Só os itens da tabela "Aprovação parcial" abaixo estão aprovados. Esquema SQL, estados, JWT/refresh, gatilhos e políticas de exclusão continuam sendo apenas exemplos anteriores à decisão de 19/10/2026; **não usar como instruções de implementação**.
 **Referência:** Requisitos v3.4 (HU-12, HU-13, HU-21, HU-22 e HU-23), PROD-07/TEC-01 e [ADR-001](ADR-001-vsa-monorepo-e-persistencia.md).
 
 > **Nota de compatibilidade da minuta:** foi aprovada a regra de que a correspondência de e-mail é referência para o primeiro vínculo Google/local e que o endereço local novo ou alterado deve ser verificado por código numérico de seis dígitos enviado a ele, com até três tentativas por verificação (HU-22). Também foi aprovado o novo login Google da identidade já vinculada à conta validada, identificada por `sub` (HU-23). Isso não aprova vínculo automático, o mecanismo do primeiro vínculo, reenvio/reinício de tentativas, os efeitos da mudança de endereço nem o esquema abaixo. Sessão opaca revogável mantida no servidor é a direção aprovada, em lugar da proposta de JWT/refresh. O exemplo SQL abaixo contém uma inconsistência (`provider_user_id TEXT NOT NULL` e comentário “NULL para local”), unicidade insuficiente para impedir duplicidades, e `users.email` opcional apesar do mínimo de e-mail em PROD-07. A busca apenas por `ACTIVE` não cobre contas preexistentes pendentes/rejeitadas/bloqueadas. A cláusula de soft delete e a afirmação de consentimento implícito não são decisões aprovadas (OPS-01). Resolver estas questões e as pendências TEC-01/PROD-07 em change OpenSpec específica antes de codificar.
+
+### Aprovação parcial (10/11/2026)
+
+Critério: aprovado o que é compatível com ADR-001, HU-21/22/23 e as decisões de `docs/requirements/decisoes-pendentes.md`, sem resolver lacuna residual. A implementação continua exigindo change OpenSpec aprovada (`2026-10-19-identity-email-link` ou outra).
+
+| Situação | Itens |
+|---|---|
+| **Aprovado** | §2.1 identidade interna única (`users.id` UUID imutável) com 1:N identidades de provedor (§2.3, dois primeiros itens). §3.1 escopo `openid email profile`, validação da assinatura do ID token pelo JWKS do Google, `email_verified=true` obrigatório e login pela identidade já vinculada por `(provider='google', sub)` (passos 1–5; HU-23). §3.2 hash de senha Argon2id (preferencial) ou bcrypt com custo configurável; parâmetros a validar. §4.1 coincidência de e-mail não basta para vínculo automático. §5.3 backend bloqueia palpite de participante sem aprovação administrativa (gate PROD-07). §6 matriz de permissões de `PENDING_APPROVAL`, alinhada à decisão PROD-07 de 02/11/2026 (conta pendente só consulta o próprio estado e corrige o próprio nome). §7.1 aprovação de participantes exclusiva de administrador autenticado, com auditoria append-only (§7.2, regra sem o esquema). §7.3 token único, validade de 30–60 min, uso único e resposta anti-enumeração (HU-21). §8 minimização de dados e endpoints públicos sem `user_identities`. |
+| **Substituído** | §3.3 JWT/refresh, substituído pela sessão opaca revogável no servidor (ADR-001). §2.2 esquemas SQL e §7.2 tabela/trigger, por terem as inconsistências da nota acima. §3.1 passo 6, §4.1 regra 1 e §4.2, porque o vínculo por link de 30 min conflita com o código numérico de seis dígitos (HU-22). §9 checklist. |
+| **Ainda aberto** | Primeiro vínculo e prova de controle; colisões e duplicidades (§4.1 regra 2); nomes dos estados e transições (§5.1, §5.2), em especial `BLOCKED`, suspensão `ACTIVE → PENDING_APPROVAL` e a verificação do e-mail antes da fila administrativa (a decisão PROD-07 de 02/11/2026 já define rejeição, reativação e saída como transições auditadas, sem exclusão automática); recuperação para contas só Google e para estados não ativos (§7.3, último item); validade, reenvio e reinício de tentativas do código; cookie, CSRF e MFA admin. |
 
 ---
 
@@ -153,7 +163,7 @@ def create_prediction(user_id, match_id, ...):
 
 ---
 
-## 6. Matriz de Permissões para PEND одежды_APPROVAL
+## 6. Matriz de Permissões para PENDING_APPROVAL
 
 | Recurso | Ação | Permitido? | Justificativa |
 |---------|------|------------|---------------|
