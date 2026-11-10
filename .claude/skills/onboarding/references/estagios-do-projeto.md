@@ -1,24 +1,35 @@
-# Estágios do projeto
+# Estágios do projeto — classificação adaptável
 
-Classifique o repositório para adaptar o onboarding:
+A classificação descreve o estado observado do projeto no momento do onboarding. Não é uma avaliação de qualidade nem pressupõe um ciclo de vida de software.
 
-- **Documentação apenas:** escopo, requisitos, decisões ou arquitetura, sem código executável identificado.
-- **Implementação inicial:** há código/protótipo, mas parte substancial ainda está planejada.
-- **Implementado:** há código executável e instruções de build/execução/testes identificáveis.
-- **Híbrido:** alguns componentes estão implementados e outros apenas especificados.
-- **Indeterminado:** evidências insuficientes.
+## Categorias de referência
 
-## Como adaptar o README
+- **Ideia ou especificação:** propósito, necessidade ou requisitos estão sendo definidos; entregáveis ainda são predominantemente conceituais.
+- **Preparação ou protótipo:** estrutura inicial, prova de conceito, amostra ou experimento já existe, mas a solução ainda está em validação.
+- **Em desenvolvimento:** os artefatos principais estão sendo construídos ou evoluídos.
+- **Em uso ou operação:** o projeto já produz resultados ou é utilizado no contexto previsto.
+- **Manutenção ou evolução:** o foco está em corrigir, atualizar, preservar ou ampliar algo já existente.
+- **Híbrido:** partes do projeto estão em estágios diferentes.
+- **Indeterminado:** as evidências disponíveis não permitem uma classificação confiável.
 
-| Conteúdo | Documentação apenas | Com código |
+Use os rótulos como referência. Projetos de pesquisa, conteúdo, hardware, dados ou infraestrutura podem exigir descrições mais adequadas ao seu ciclo real.
+
+## Adaptação por tipo de repositório
+
+| Natureza observada | O que pode ser relevante | O que não presumir |
 |---|---|---|
-| Problema e proposta | Documentar com base na especificação | Documentar e validar com comportamento |
-| Arquitetura | Identificar como proposta | Comparar proposta e implementação |
-| Tecnologias | Definidas/propostas/não decididas | Confirmar manifests e código |
-| Ambiente local | Registrar decisões pendentes | Documentar pré-requisitos e passos |
-| Containers | Só se estiverem previstos/documentados | Inspecionar configuração existente |
-| Variáveis | Apenas as especificadas | Confirmar uso e explicar finalidade |
-| Build e execução | A definir/não aplicável | Comandos verificados |
-| Testes | Estratégia planejada, se houver | Testes existentes e comandos verificados |
+| Aplicação, serviço ou site | Capacidades, interfaces, componentes, execução, operação | Framework, banco, API ou arquitetura específica |
+| Biblioteca ou pacote | Público consumidor, interface, compatibilidade, integração e exemplos de uso | Aplicação executável ou interface visual |
+| Dados ou pesquisa | Fontes, formatos, metodologia, transformações, reprodutibilidade | Banco de dados, pipeline ou testes automatizados |
+| Infraestrutura ou configuração | Recursos, relações, parâmetros, dependências e procedimentos | Permissão para provisionar ou alterar ambientes |
+| Automação ou scripts | Entradas, saídas, pré-condições, efeitos e agendamento existente | Execução segura sem inspeção |
+| Documentação ou especificação | Objetivo, público, organização, decisões e artefatos | Código ou build |
+| Firmware/hardware/projeto físico | Componentes, interfaces, montagem, operação e validação documentadas | Procedimentos físicos ou de segurança não documentados |
 
-A classificação é uma fotografia do material analisado, não um julgamento de qualidade.
+## Como documentar o estágio
+
+- Diferencie o que existe do que está planejado.
+- Use evidências: arquivos, documentos, metadados, resultados de execução ou validação.
+- Em projeto híbrido, classifique partes relevantes separadamente.
+- Quando houver lacuna, registre-a como desconhecida; não invente status.
+- Adapte as seções do README ao estágio, sem preencher itens não aplicáveis.

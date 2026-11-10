@@ -1,79 +1,60 @@
 # Nome do projeto
 
-> Uma frase curta explicando a proposta de valor do projeto.
+> Resumo em uma frase: o que é, para que serve ou qual resultado produz.
 
-## Sobre o projeto
+## Visão geral
 
-### Problema
+Explique o contexto, o propósito e o público/consumidor do projeto. Adapte o texto à natureza do repositório.
 
-Descreva o problema ou necessidade que motivou o projeto, com base em requisitos ou documentação aprovada.
+## Problema e proposta
 
-### Proposta de solução
+Descreva a necessidade atendida, a proposta, os principais resultados e os limites conhecidos.
 
-Explique como o projeto pretende resolver o problema e quais são suas principais capacidades.
+## Estado atual
 
-> **Estágio:** Documentação apenas / Implementação inicial / Implementado / Híbrido.
-> Ajuste a identificação ao estado real. Em projeto sem código, deixe explícito que a solução e a arquitetura são propostas.
+Informe o estágio e diferencie o que existe/foi observado do que está especificado, proposto ou planejado.
 
-## Arquitetura
+## Estrutura e relações
 
-Descreva brevemente os componentes e suas responsabilidades.
+Apresente os principais artefatos, componentes, responsabilidades, dependências ou relações relevantes ao tipo de projeto.
+
+Inclua um diagrama Mermaid somente quando houver evidência e ganho de entendimento:
 
 ```mermaid
 flowchart LR
-    A[Ator ou origem] --> B[Componente principal]
-    B --> C[Componente ou serviço]
+    A[Elemento real confirmado] --> B[Elemento relacionado confirmado]
 ```
 
-Substitua o exemplo por um diagrama derivado da arquitetura documentada ou observada. Não mantenha componentes ilustrativos como se fossem reais.
+Substitua os marcadores por elementos reais e verificados, ou remova o exemplo.
 
-## Tecnologias
+## Fluxos e procedimentos principais
 
-| Tecnologia | Finalidade | Estado |
-|---|---|---|
-| A definir | A definir | Não decidida |
+Explique como os principais elementos interagem ou como o trabalho é realizado. Considere Mermaid para sequências, processos, estados ou relações, somente quando útil.
 
-## Pré-requisitos
+## Pré-requisitos e configuração
 
-Liste ferramentas e versões confirmadas. Se ainda não estiverem definidas, registre a pendência.
+Inclua somente ferramentas, versões, parâmetros e pré-condições confirmados. Não exponha valores secretos.
 
-## Ambiente local
+## Preparação e uso
 
-Explique como preparar e iniciar o projeto.
+Descreva como preparar, acessar, reproduzir, executar ou utilizar o projeto conforme sua natureza. Omita esta seção quando não houver procedimento aplicável.
 
-### Opção com containers
+## Validação e manutenção
 
-Inclua apenas se houver configuração suportada no repositório. Informe os comandos confirmados e os serviços iniciados.
+Descreva como verificar resultados, executar testes, validar artefatos, atualizar ou manter o projeto, somente quando houver processo documentado.
 
-### Execução local
+## Organização do repositório
 
-Inclua os passos e comandos confirmados para instalar dependências e iniciar os componentes.
+Explique os diretórios, arquivos ou grupos de artefatos que ajudam uma pessoa nova a navegar.
 
-## Configuração
+## Como contribuir ou continuar o trabalho
 
-Liste variáveis de ambiente conhecidas, sem valores secretos.
+Apresente convenções, decisões, responsabilidades e o primeiro passo seguro, quando documentados.
 
-| Variável | Finalidade | Obrigatória? | Exemplo seguro |
-|---|---|---|---|
-| `VAR_EXEMPLO` | Descrever | A confirmar | `valor-ilustrativo` |
+## Referências
 
-Se existir um arquivo de exemplo, explique como utilizá-lo. Nunca inclua credenciais reais.
+Links relativos para requisitos, decisões, manuais, especificações, contratos, catálogos ou documentação especializada.
 
-## Build e testes
+---
 
-```bash
-# Substitua por comandos verificados do projeto.
-```
-
-Explique os testes disponíveis e como executá-los. Se ainda não houver código/testes, registre como não aplicável ou a definir.
-
-## Estrutura do projeto
-
-Descreva apenas os diretórios e módulos relevantes para orientar a navegação.
-
-## Documentação complementar
-
-- Escopo e requisitos:
-- Arquitetura/decisões:
-- Guia de contribuição:
-- Outros:
+**Instruções de uso do template:** adapte esta estrutura ao projeto. Não mantenha títulos sem conteúdo, exemplos genéricos, comandos não verificados ou seções que imponham tecnologias/arquiteturas inexistentes. O README deve ser suficiente para começar, mas não precisa duplicar toda a documentação especializada.

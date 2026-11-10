@@ -1,0 +1,195 @@
+{
+  "skill_name": "onboarding",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Execute o onboarding deste repositório e atualize o README para que uma pessoa nova entenda o projeto.",
+      "should_trigger": true,
+      "expected_output": "A Skill começa imediatamente inspecionando o repositório, executa sete etapas, emite checkpoints curtos somente após resultados verificados, continua automaticamente após cada checkpoint, reconcilia e valida o README e apresenta a decisão Mermaid justificada.",
+      "assertions": [
+        "Após carregar a Skill, o agente inicia uma operação real de inspeção; não encerra com anúncio, barra ou plano.",
+        "Não há barra de progresso, percentuais, contagem regressiva ou mensagem inicial de progresso.",
+        "As sete etapas são executadas na ordem e cada checkpoint aparece apenas depois de trabalho e evidência reais.",
+        "Cada checkpoint é seguido por ações da próxima etapa no mesmo fluxo, sem aguardar nova mensagem do usuário.",
+        "Os checkpoints não são pré-gerados nem reunidos retrospectivamente em uma única resposta.",
+        "As validações finais acontecem depois da reconciliação do README.",
+        "O README é a única classe de arquivo do repositório alterada pela Skill.",
+        "A pergunta sobre novos diagramas Mermaid é respondida SIM ou NÃO com justificativa."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Faça o onboarding deste repositório de documentação, que não tem código, build ou testes, e deixe o README pronto para novos colaboradores.",
+      "should_trigger": true,
+      "expected_output": "A Skill adapta as sete etapas ao repositório documental, omite build/testes não aplicáveis com justificativa e atualiza/valida o README sem impor stack técnica.",
+      "assertions": [
+        "A Skill não pressupõe código executável, build, testes ou containers.",
+        "Itens não aplicáveis são justificados e não interrompem o fluxo.",
+        "O README reflete a finalidade, organização, uso e navegação da documentação."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Revise o onboarding deste conjunto de dados e confira se o README e os diagramas realmente refletem a organização atual.",
+      "should_trigger": true,
+      "expected_output": "A Skill reconhece o tipo de repositório como dados, adapta a investigação a formatos, proveniência, metodologia e reprodutibilidade somente quando documentados e avalia diagramas adequados.",
+      "assertions": [
+        "A Skill não impõe arquitetura de aplicação ou linguagem de programação.",
+        "As afirmações sobre dados e fluxos são sustentadas por evidências do repositório.",
+        "A decisão de criar ou não diagramas Mermaid é explícita e fundamentada."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Execute o onboarding deste projeto. Ainda não existe README.md.",
+      "should_trigger": true,
+      "expected_output": "A Skill cria um README adaptado ao projeto, sem preencher seções irrelevantes ou inventar comandos, versões ou arquitetura.",
+      "assertions": [
+        "A ausência de README é identificada na auditoria.",
+        "Um README é criado no local correto.",
+        "O documento inclui somente informações confirmadas e seções úteis ao tipo de projeto.",
+        "A validação final ocorre depois da criação."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Execute o onboarding. O README já foi atualizado recentemente; confirme se continua adequado ao estado atual do repositório.",
+      "should_trigger": true,
+      "expected_output": "A Skill realiza nova auditoria factual e visual, não confia no histórico, e mantém o README sem diff somente se demonstrar que não há melhoria material.",
+      "assertions": [
+        "O README é relido e comparado com evidências atuais nesta execução.",
+        "A ausência de alteração é justificada separadamente para conteúdo e apresentação visual.",
+        "A pergunta Mermaid recebe resposta NÃO se nenhuma melhoria adicional for necessária.",
+        "A Skill não cria alterações cosméticas sem benefício."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Implemente somente a correção deste endpoint e ajuste os testes relacionados. Não faça onboarding nem altere a documentação.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; a tarefa é uma alteração de código/testes explicitamente fora do escopo de onboarding.",
+      "assertions": [
+        "A Skill onboarding não é invocada apenas porque há um repositório ou testes envolvidos.",
+        "Nenhuma alteração no README é iniciada pelo onboarding."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Analise o projeto e o README, mas não altere nenhum arquivo. Quero apenas o diagnóstico de onboarding.",
+      "should_trigger": true,
+      "expected_output": "A Skill é ativada, executa as sete etapas de análise e auditoria, mas respeita a restrição explícita de somente leitura e informa que a reconciliação não foi escrita.",
+      "assertions": [
+        "A Skill é ativada para o diagnóstico de onboarding.",
+        "Nenhum arquivo é modificado.",
+        "O estado final é SOMENTE ANÁLISE, não CONCLUÍDO com README reconciliado."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Execute o onboarding em uma ferramenta que só apresenta a resposta final depois que o agente conclui todas as chamadas; não há suporte a mensagens intermediárias independentes.",
+      "should_trigger": true,
+      "expected_output": "A Skill executa todas as etapas permitidas sem simular checkpoints em tempo real. Se o cliente agrupa mensagens, informa essa limitação no resumo final; a limitação não é motivo para parar após a primeira etapa.",
+      "assertions": [
+        "A investigação e reconciliação permitidas são executadas até o final.",
+        "Não são inventados eventos intermediários ou alegações de streaming.",
+        "A limitação de entrega das mensagens é registrada no resumo final sem interromper o trabalho."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Execute o onboarding em um repositório com vários agentes configurados, mas sem delegação habilitada na sessão atual.",
+      "should_trigger": true,
+      "expected_output": "A Skill distingue arquivos de configuração de agentes efetivamente invocáveis, não contorna permissões e prossegue com análise direta pelas sete etapas.",
+      "assertions": [
+        "A presença de arquivos de agente não é tratada como prova de invocabilidade.",
+        "A indisponibilidade de delegação não interrompe o onboarding.",
+        "A Skill não altera configurações ou permissões do agente."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Corrija apenas a gramática e a ortografia deste trecho de README que vou colar aqui. Não investigue o repositório.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; trata-se de uma revisão pontual de texto, explicitamente sem investigação do repositório.",
+      "assertions": [
+        "A Skill onboarding não é invocada para uma revisão localizada de texto.",
+        "Nenhuma auditoria completa de onboarding é iniciada."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Crie um README para o projeto descrito a seguir, sem acessar arquivos ou repositório: é uma aplicação de agenda simples com cadastro de eventos.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; o usuário pede redação a partir de uma descrição fornecida, não investigação/onboarding de um repositório.",
+      "assertions": [
+        "A Skill onboarding não é invocada sem pedido para investigar um repositório.",
+        "A tarefa é reconhecida como criação de texto a partir de contexto fornecido."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Corrija somente a sintaxe deste bloco Mermaid no README. Não altere outras partes e não faça diagnóstico do projeto.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; a tarefa é uma correção isolada de diagrama, não onboarding.",
+      "assertions": [
+        "A Skill onboarding não é invocada para uma correção localizada de Mermaid.",
+        "A tarefa não é expandida para uma auditoria geral do repositório."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Atualize o CHANGELOG.md com as alterações desta versão e não toque no README.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; o pedido é específico para CHANGELOG e exclui README/onboarding.",
+      "assertions": [
+        "A Skill onboarding não é invocada para edição isolada do changelog.",
+        "README permanece fora do escopo."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Quais comandos de build estão declarados neste repositório? Apenas encontre e liste os comandos, sem fazer onboarding.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; o usuário solicitou uma busca pontual, explicitamente sem onboarding.",
+      "assertions": [
+        "A Skill onboarding não é invocada para uma consulta pontual de comandos.",
+        "Nenhuma reconciliação de README é iniciada."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Explique o que é onboarding de desenvolvedores e quais práticas costumam ser úteis.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; trata-se de uma pergunta conceitual, não de uma solicitação para investigar um repositório.",
+      "assertions": [
+        "A Skill onboarding não é invocada para uma explicação conceitual.",
+        "A resposta não assume acesso a um repositório."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Implemente um endpoint REST seguindo o padrão do projeto e escreva testes unitários. Não atualize a documentação.",
+      "should_trigger": false,
+      "expected_output": "A Skill onboarding não é ativada; a tarefa é implementação e testes, sem solicitação de onboarding.",
+      "assertions": [
+        "A Skill onboarding não é invocada para uma tarefa de implementação de código.",
+        "Nenhuma alteração de README é feita pela Skill."
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "Execute a skill @onboarding e atualize o README.md do projeto.",
+      "should_trigger": true,
+      "expected_output": "Depois de carregar a Skill, o agente inspeciona o repositório antes de emitir qualquer checkpoint. Ao concluir a etapa 1, informa o resultado e já executa a investigação da etapa 2 no mesmo fluxo, repetindo até validar e entregar o README.",
+      "assertions": [
+        "A primeira ação após a ativação é uma operação real de inspeção do workspace, não uma mensagem de status.",
+        "O checkpoint da etapa 1 só aparece depois que escopo, README-alvo e preservação foram verificados.",
+        "Após o checkpoint da etapa 1, o agente inicia a etapa 2 sem esperar mensagem adicional do usuário.",
+        "Os sete checkpoints de conclusão aparecem intercalados com a execução quando o runtime suporta mensagens intermediárias.",
+        "A execução não termina após um checkpoint enquanto houver etapas pendentes."
+      ]
+    }
+  ],
+  "version": "1.9.0",
+  "purpose": "Regression tests for action-first execution, seven phase-completion checkpoints, repository agnosticism and README reconciliation."
+}

@@ -49,6 +49,56 @@ O sistema é uma aplicação web moderna e responsiva voltada a um grupo privado
 - **Fuso horário oficial:** Todo o sistema exibe datas e horários estritamente no **Horário de Brasília (BRT / UTC-3)**. Os instantes são armazenados em UTC.
 - **Escopo excluído:** Sem apostas financeiras, sem ligas públicas/multi-tenancy, sem streaming de vídeo e sem integração automática paga com feeds externos de resultados (atualizações manuais auditadas via painel administrativo).
 
+### 1.2 Diagrama 5 — Regra de Corte Temporal (Cutoff $T - 1\text{h}$) e Sigilo
+
+```mermaid
+flowchart LR
+  subgraph Janela["Janela de Palpites (Aberta)"]
+    P1["Participante submete palpite"] --> S1["Servidor captura timestamp confiável (PROD-01)"]
+  end
+
+  subgraph Corte["Instante de Corte: T - 1 hora (BRT)"]
+    S1 --> Check{Chegada < T - 1h?}
+  end
+
+  subgraph Fechamento["Janela Fechada (Cutoff)"]
+    Check -->|Sim| Gravado["Palpite gravado com sucesso"]
+    Check -->|Não| Rejeitado["Palpite rejeitado pelo servidor"]
+  end
+
+  subgraph Sigilo["Sigilo Temporal"]
+    Gravado --> Oculto["Palpites alheios: OCULTOS até o kickoff"]
+    Kickoff["Kickoff Oficial da Partida (T)"] --> Publico["Palpites e grades tornados PÚBLICOS"]
+  end
+```
+
+### 1.3 Diagrama 6 — Fluxo de Apuração de Pontos e Critérios de Ranking
+
+```mermaid
+flowchart TD
+  PartidaFim["Fim da Partida (120 min / 90 min + prorrogação)\n(Nota: Pênaltis contam como empate)"] --> Apuracao["Apuração Automatizada (Função Pura)"]
+
+  Apuracao --> P6["6 pts: Placar exato"]
+  Apuracao --> P3["3 pts: Vencedor/empate + gols de 1 time"]
+  Apuracao --> P2["2 pts: Apenas resultado (1X2), gols errados"]
+  Apuracao --> P1["1 pt: Errou resultado, acertou gols de 1 time"]
+  Apuracao --> P0["0 pts: Nenhuma combinação"]
+
+  P6 --> Soma["Soma Acumulada da Rodada & Torneio"]
+  P3 --> Soma
+  P2 --> Soma
+  P1 --> Soma
+  P0 --> Soma
+
+  Soma --> Ranking["Geração do Ranking de Participantes"]
+
+  Ranking --> Desempate{"Desempates"}
+  Desempate --> D1["1º Maior nº de placares exatos (6 pts)"]
+  Desempate --> D2["2º Maior nº de acertos de 3 pts"]
+  Desempate --> D3["3º Maior pontuação em rodadas anteriores"]
+  Desempate --> D4["4º Ordem alfabética do nome normalizado\n(Empate persistente = classificação compartilhada)"]
+```
+
 ---
 
 ## 2. Estado Atual do Projeto
