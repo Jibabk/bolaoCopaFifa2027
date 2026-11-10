@@ -26,6 +26,8 @@ build/
 # Next.js
 .next/
 out/
+next-env.d.ts
+*.tsbuildinfo
 
 # IDE & OS
 .vscode/
@@ -49,3 +51,6 @@ Thumbs.db
 
 # Preferências locais do Claude Code (modelo por desenvolvedor)
 .claude/settings.local.json
+
+# graphify: grafo gerado localmente por cada desenvolvedor (regenerável)
+graphify-out/

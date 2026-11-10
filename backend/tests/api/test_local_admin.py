@@ -24,7 +24,9 @@ def test_local_admin_login_sets_httponly_cookie(monkeypatch) -> None:
     monkeypatch.setenv("ENVIRONMENT", "development")
     monkeypatch.setenv("LOCAL_ADMIN_PASSWORD", "local-test-password")
 
-    response = client.post("/admin/session", json={"username": "admin", "password": "local-test-password"})
+    response = client.post(
+        "/admin/session", json={"username": "admin", "password": "local-test-password"}
+    )
 
     assert response.status_code == 204
     assert response.cookies.get("bolao_admin_session")
@@ -45,7 +47,9 @@ def test_local_admin_login_is_disabled_outside_development(monkeypatch) -> None:
     monkeypatch.setenv("ENVIRONMENT", "production")
     monkeypatch.setenv("LOCAL_ADMIN_PASSWORD", "local-test-password")
 
-    response = client.post("/admin/session", json={"username": "admin", "password": "local-test-password"})
+    response = client.post(
+        "/admin/session", json={"username": "admin", "password": "local-test-password"}
+    )
 
     assert response.status_code == 404
     assert not local_admin._sessions
@@ -64,7 +68,9 @@ def test_session_requires_auth_and_logout_revokes_it(monkeypatch) -> None:
     monkeypatch.setenv("LOCAL_ADMIN_PASSWORD", "local-test-password")
     assert client.get("/admin/session").status_code == 401
 
-    login_response = client.post("/admin/session", json={"username": "admin", "password": "local-test-password"})
+    login_response = client.post(
+        "/admin/session", json={"username": "admin", "password": "local-test-password"}
+    )
     assert login_response.status_code == 204
     assert client.get("/admin/session").json() == {"username": "admin"}
 

@@ -34,9 +34,13 @@ def login(payload: AdminLoginRequest, response: Response) -> None:
 
     local_admin_password = getenv("LOCAL_ADMIN_PASSWORD", "")
     username_valid = compare_digest(payload.username, _ADMIN_USERNAME)
-    password_valid = bool(local_admin_password) and compare_digest(payload.password, local_admin_password)
+    password_valid = bool(local_admin_password) and compare_digest(
+        payload.password, local_admin_password
+    )
     if not (username_valid and password_valid):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas"
+        )
 
     session_id = secrets.token_urlsafe(32)
     _sessions.add(session_id)
@@ -57,7 +61,9 @@ def current_session(
     if not _development_enabled():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     if not _is_admin_session(session_id):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Autenticação necessária")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Autenticação necessária"
+        )
     return {"username": _ADMIN_USERNAME}
 
 
