@@ -60,9 +60,9 @@ O repositório encontra-se no estágio de **fundação documental e scaffold de 
 | **Documentação Canônica** | **Registrada** | Requisitos v3.4 (HU-22/23), Decisões e Pendências v1.6, Arquitetura v0.4, ADR-001 e critérios PROD-06 (aprovados em 19/10/2026, com pendências); detalhes de vínculo/segurança ainda abertos. |
 | **Governança SDD** | **Scaffold documental** | OpenSpec configurado (`openspec/config.yaml`, com `context` e `rules`) e comandos/skills em `.claude/`. Changes `2026-10-18-technical-foundation` e `2026-10-19-identity-email-link` estão propostas; validação sintática não equivale a aprovação nem validação do build. |
 | **Topologia Local (Docker)** | **Configurada** | `docker-compose.yml` estruturado com 3 serviços (`frontend`, `backend`, `db`), rede bridge e volume persistente. |
-| **Backend (FastAPI)** | **Scaffold Estrutural** | Estrutura de diretórios DDD/Clean Architecture criada, `pyproject.toml` configurado, `Dockerfile` multi-stage presente. Módulos em `app/modules/` contêm apenas marcadores e `__init__.py`, sem regras implementadas. O entrypoint `app.bootstrap.main:app` existe e expõe `/`, `/live` e `/ready`; o `/ready` ainda não consulta o banco. |
-| **Frontend (Next.js)** | **Scaffold Estrutural** | Estrutura App Router criada (`app/`, `features/`, `components/`, `lib/`), `package.json`, `tsconfig.json` e `Dockerfile` presentes. Existem `layout.tsx`, `loading.tsx`, `not-found.tsx` e `page.tsx` básicos; `globals.css`, `public/`, lockfile e configuração do ESLint foram criados localmente em 19/10/2026 (ainda não commitados); instalação, build e lint **não foram validados**. |
-| **Banco de Dados & Migrações**| **Scaffold** | Serviço PostgreSQL 16 declarado no Compose. Diretório `backend/migrations/` contém apenas `.gitkeep`; schemas e tabelas Alembic ainda não foram inicializados. |
+| **Backend (FastAPI)** | **Scaffold Estrutural** | Estrutura de diretórios DDD/Clean Architecture criada, `pyproject.toml` configurado, `Dockerfile` multi-stage presente. Módulos em `app/modules/` contêm apenas marcadores e `__init__.py`, sem regras implementadas. O entrypoint `app.bootstrap.main:app` expõe `/`, `/live` e `/ready`; desde 30/10/2026 o `/ready` consulta o PostgreSQL (`SELECT 1`) com psycopg 3 síncrono e responde 503 quando o banco está indisponível; build e `up --wait` validados em 30/10/2026. |
+| **Frontend (Next.js)** | **Scaffold Estrutural** | Estrutura App Router criada (`app/`, `features/`, `components/`, `lib/`), `package.json`, `tsconfig.json` e `Dockerfile` presentes. Existem `layout.tsx`, `loading.tsx`, `not-found.tsx` e `page.tsx` básicos; `globals.css`, `public/`, lockfile e configuração do ESLint foram criados localmente em 19/10/2026 (ainda não commitados); `npm ci`, `lint`, `type-check` e build da imagem foram validados em 30/10/2026; `GET /api/health` serve de healthcheck no Compose. |
+| **Banco de Dados & Migrações**| **Scaffold** | Serviço PostgreSQL 16 declarado no Compose. Alembic inicializado em 30/10/2026 (`backend/alembic.ini`, `backend/migrations/env.py`, `versions/` vazio; URL vem de `DATABASE_URL`); sem metadata nem tabelas, pois os modelos ainda não foram aprovados. |
 | **Suíte de Testes** | **Scaffold** | Diretórios estruturados (`unit/`, `integration/`, `api/`, `contract/`), dependências declaradas (`pytest`, `ruff`, `mypy`), sem testes implementados. |
 
 **Decisão de identidade:** [HU-22/23](docs/requirements/requisitos-bolao-copa-mundo-feminina-2027.md) exigem verificar o endereço local novo ou alterado por código numérico de seis dígitos enviado a ele, com até três tentativas por verificação, antes de considerá-lo para vínculo Google/local por e-mail. Conta validada com identidade Google já vinculada pode autenticar-se novamente por `sub`. Isso não concede participação sem aprovação administrativa nem substitui a recuperação HU-21. Prova segura do primeiro vínculo, validade, reenvio/reinício de tentativas e efeitos da troca de endereço ainda exigem decisão; a [change de identidade](openspec/changes/2026-10-19-identity-email-link/proposal.md) é proposta, não autorização para implementar.
@@ -203,7 +203,7 @@ flowchart TD
 | **Backend** | FastAPI / Python | `>=0.100.0` / `>=3.11` | API HTTP e OpenAPI; persistência síncrona como direção inicial (ADR-001), ainda não configurada |
 | **Servidor ASGI** | Uvicorn | `>=0.23.0` | Execução HTTP assíncrona do backend |
 | **Validação** | Pydantic / Pydantic Settings | `>=2.0.0` | Validação de payloads e configurações tipadas de ambiente |
-| **ORM / Banco** | SQLAlchemy / asyncpg | `>=2.0.0` / `>=0.28.0` | SQLAlchemy síncrono aprovado como direção inicial (ADR-001); `asyncpg` ainda declarado no scaffold e driver/URL compatíveis pendentes |
+| **ORM / Banco** | SQLAlchemy / psycopg 3 | `>=2.0.0` / `>=3.2` (`psycopg[binary]`) | SQLAlchemy síncrono (ADR-001) com driver psycopg 3, aprovado em 30/10/2026; `DATABASE_URL` usa o esquema `postgresql+psycopg://` |
 | **Migrações** | Alembic | `>=1.12.0` | Versionamento e evolução de schema do banco relacional |
 | **Banco Relacional** | PostgreSQL (Alpine) | `16-alpine` | Banco de dados principal com suporte transacional estrito |
 | **Qualidade Backend** | Ruff / Mypy / Pytest | `>=0.1.0` / `>=1.5.0` / `>=7.4.0` | Linter ultra-rápido, checagem estática de tipos e testes automatizados |
@@ -355,7 +355,7 @@ flowchart TB
 
 ### 6.4 Variáveis de Ambiente (`.env.example`)
 
-O `.env.example` é um modelo para a configuração futura. O Compose ainda define diretamente variáveis para os serviços e não repassa automaticamente os valores de `.env` ao frontend e ao backend; copiar o arquivo não altera, por si só, credenciais, URLs ou configurações da aplicação. A integração das variáveis deve ser decidida e validada antes de depender dela.
+O `.env.example` é o modelo das variáveis locais. O Compose lê `.env` (opcional) de duas formas: o backend o recebe via `env_file` e as variáveis `POSTGRES_*` são interpoladas no serviço `db` e na `DATABASE_URL` do backend (fonte única, com padrões iguais aos do exemplo). O frontend **não** recebe o `.env`, para não expor segredos do backend; ele usa apenas `NODE_ENV` e `NEXT_PUBLIC_API_URL` definidos no Compose. No `environment` do backend, `PYTHONPATH`, `ENVIRONMENT` e `DATABASE_URL` têm precedência sobre o `.env`. Use senha do banco sem caracteres especiais de URL. `env_file` com `required: false` exige Docker Compose >= 2.24.
 
 ```bash
 cp .env.example .env
@@ -404,7 +404,7 @@ Para desenvolvedores no Windows 11 com Docker Desktop e WSL 2:
    cd bolaoCopaFifa2027
    ```
 
-2. **Consulte o modelo de variáveis de ambiente:** `.env.example` descreve valores de desenvolvimento, mas o Compose ainda não os repassa aos serviços. Se precisar de uma cópia local, use `cp .env.example .env`; não presuma que editar `.env` alterará o comportamento dos containers.
+2. **Consulte o modelo de variáveis de ambiente:** `.env.example` descreve valores de desenvolvimento. Copie com `cp .env.example .env` (opcional: sem `.env`, o Compose usa os padrões). Veja a seção 6.4 para o que cada serviço recebe.
 
 3. **Após validação da fundação técnica, construa e inicie os containers:** os comandos abaixo são referências para a etapa de validação pelo time; o build e a inicialização ainda não foram executados neste projeto.
    ```bash
@@ -429,7 +429,7 @@ Para desenvolvedores no Windows 11 com Docker Desktop e WSL 2:
 | **Documentação OpenAPI** | [http://localhost:8000/docs](http://localhost:8000/docs) | Swagger interativo da API |
 | **PostgreSQL** | `localhost:5432` | Conexão externa via clientes de banco (DBeaver, psql) |
 
-> ⚠️ **Aviso de Estado Inicial (Scaffold):** O `Dockerfile` do backend foi configurado para executar `app.bootstrap.main:app`. O arquivo existe e expõe `/`, `/live` e `/ready`. O Dockerfile do backend ainda não foi validado por build (ver [Seção 11](#11-próximos-passos)).
+> ⚠️ **Aviso de Estado Inicial (Scaffold):** O `Dockerfile` do backend foi configurado para executar `app.bootstrap.main:app`. O arquivo existe e expõe `/`, `/live` e `/ready`. O build do backend e `docker compose up --wait` foram validados em 30/10/2026 (ver [Seção 11](#11-próximos-passos)).
 
 ### 7.4 Comandos Operacionais Úteis
 

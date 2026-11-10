@@ -66,11 +66,21 @@ Antes de concluir sua resposta no turno ou acionar a validação do `/goal` / `S
 
 ## Qualidade e execução
 
-Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspondente às versões selecionadas; não invente versões, comandos, dependências ou scripts. Cubra regras de domínio, autorização, concorrência, idempotência, ranking e migrações com validação proporcional. Não há aplicação nem comandos de build/teste confirmados no repositório; não declare testes executados sem executá-los. Não crie `AGENTS.md` sem necessidade concreta de compatibilidade identificada.
+Faça mudanças pequenas e revisáveis. Consulte documentação oficial correspondente às versões selecionadas; não invente versões, comandos, dependências ou scripts. Cubra regras de domínio, autorização, concorrência, idempotência, ranking e migrações com validação proporcional. Não declare testes executados sem executá-los. Após qualquer implementação, rode as skills `testes` e `verificacao`; antes de qualquer PR, `scripts/verificar.sh` precisa passar com a árvore limpa, e o hook `.claude/hooks/portao-pr.sh` bloqueia `gh pr create` sem esse carimbo. Não crie `AGENTS.md` sem necessidade concreta de compatibilidade identificada.
 
 ## Uso de subagentes
 
 O Claude Code descobre automaticamente os subagentes definidos em `.claude/agents/`; seus papéis e limites devem permanecer nos respectivos perfis, sem duplicação nesta instrução. Delegue quando a especialização ajudar a tarefa, mantendo coordenação e escopo claros. Requisitos aprovados e decisões humanas prevalecem sobre recomendações dos agentes. Nenhum agente resolve lacunas de produto, aprova mudanças em nome do usuário ou transforma artefatos OpenSpec em autorização de implementação.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
 
 ## Convenções
 - Idioma de commits e documentação: português do Brasil.

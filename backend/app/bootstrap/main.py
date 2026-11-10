@@ -2,7 +2,9 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.bootstrap.database import check_database
 from app.modules.identity.local_admin import router as local_admin_router
 
 app = FastAPI(
@@ -23,15 +25,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to Bolão Copa 2027 API"}
+
 
 @app.get("/live")
 async def liveness():
     return {"status": "ok", "service": "bolao-backend"}
 
+
 @app.get("/ready")
-async def readiness():
-    # In a real app, this would check database connections
+def readiness():
+    # def síncrono: a consulta ao banco bloqueia e roda no threadpool do FastAPI
+    if not check_database():
+        return JSONResponse(status_code=503, content={"status": "unavailable"})
     return {"status": "ready"}
